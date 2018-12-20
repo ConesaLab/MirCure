@@ -23,7 +23,7 @@ hello <- function() {
 
 
 runExample <- function() {
-  appDir <- system.file("shiny-examples", "myapp", package = "mypackage")
+  appDir <- system.file("shinyAPPs", package = "basicshinnyapp")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `mypackage`.", call. = FALSE)
   }
