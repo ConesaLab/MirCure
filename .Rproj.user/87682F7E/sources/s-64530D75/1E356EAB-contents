@@ -13,20 +13,20 @@
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
 
+
+
+##################https://deanattali.com/2015/04/21/r-package-shiny-app/
 hello <- function() {
   print("Hello, world!")
 }
 
 
-runBasicShinyApp <- function() {
-  print("Run Shiny APp!")
-}
 
 runExample <- function() {
   appDir <- system.file("shiny-examples", "myapp", package = "mypackage")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `mypackage`.", call. = FALSE)
   }
-  
+
   shiny::runApp(appDir, display.mode = "normal")
 }
