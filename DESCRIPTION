@@ -1,6 +1,6 @@
 Package: mirQCApp
 Type: Package
-Title: What the Package Does (Title Case)
+Title: A tool for quality control and filtering of microRNAs
 Version: 0.1.0
 Author: Guillem Ylla
 Maintainer: The package maintainer <guillemyllabou@gmail.com>
