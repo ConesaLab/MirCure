@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1545321184462.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3569360466",
+    "id" : "7B3B243B",
+    "lastKnownWriteTime" : 1545321184,
+    "last_content_update" : 1545321184,
+    "path" : "~/Documents/mirQCApp/R/basicshinnyapp/server.R",
+    "project_path" : "R/basicshinnyapp/server.R",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
