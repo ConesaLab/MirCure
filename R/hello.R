@@ -23,9 +23,9 @@ hello <- function() {
 
 
 runExample <- function() {
-  appDir <- system.file("shinyAPPs", package = "basicshinnyapp")
+  appDir <- system.file("shinyAPPs", "basicshinnyapp",package = "mirQCApp")
   if (appDir == "") {
-    stop("Could not find example directory. Try re-installing `mypackage`.", call. = FALSE)
+    stop("Could not find example directory. Try re-installing `mirQCApp`.", call. = FALSE)
   }
 
   shiny::runApp(appDir, display.mode = "normal")
