@@ -30,3 +30,13 @@ runExample <- function() {
 
   shiny::runApp(appDir, display.mode = "normal")
 }
+
+
+runMirPlot <- function() {
+  appDir <- system.file("shinyAPPs", "mirPlot",package = "mirQCApp")
+  if (appDir == "") {
+    stop("Could not find example directory. Try re-installing `mirQCApp`.", call. = FALSE)
+  }
+
+  shiny::runApp(appDir, display.mode = "normal")
+}
