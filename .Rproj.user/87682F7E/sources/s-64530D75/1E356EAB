@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1545320714098.000,
-    "dirty" : false,
+    "dirty" : true,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "1E356EAB",
     "lastKnownWriteTime" : 1545321150,
-    "last_content_update" : 1545321150556,
+    "last_content_update" : 1545321306485,
     "path" : "~/Documents/mirQCApp/R/hello.R",
     "project_path" : "R/hello.R",
     "properties" : {
-        "cursorPosition" : "20,3",
-        "scrollLine" : "0"
+        "cursorPosition" : "31,1",
+        "scrollLine" : "4"
     },
     "relative_order" : 1,
     "source_on_save" : false,
