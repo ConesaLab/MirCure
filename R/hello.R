@@ -51,7 +51,7 @@ installViennaRNA <- function() {
     #ViennaDir <- system.file("ViennaRNA", "ViennaRNA-2.4.11.tar.gz",package = "mirQCApp")
     ViennaDir <- system.file("ViennaRNA",package = "mirQCApp")
 
-  if (appDir == "") {
+  if (ViennaDir == "") {
       stop("Could not find example directory. Try re-installing `mirQCApp`.", call. = FALSE)
     }else{
       #system(paste0(" tar xvzf ", ViennaDir, "/ViennaRNA-2.4.11.tar.gz | ./configure ",ViennaDir," /ViennaRNA-2.4.11 |",  "make ",ViennaDir," /ViennaRNA-2.4.11" ) )
