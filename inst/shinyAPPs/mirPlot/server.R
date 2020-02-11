@@ -55,7 +55,7 @@ server <- function(input, output, session) {
        #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
-       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3conflict.gff3")
+       #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3conflict.gff3")
 
        return(head(precsdf))
   })
@@ -66,7 +66,7 @@ server <- function(input, output, session) {
     matdf <- readGFF(input$mature$datapath)
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
-    matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3conflict.gff3")
+    #matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3conflict.gff3")
     return(head(matdf))
    })
 
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
         stardf <- readGFF(input$star$datapath)
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
-        stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3conflict.gff3")
+       # stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3conflict.gff3")
         return(head(stardf))
  })
 
@@ -139,7 +139,7 @@ observeEvent(input$ButtonSeqs, {
 
   #genomefasta <- FaFile(paste("data/genomes","zma.AGPv4.full.fasta", sep="/"))
   #genomefasta <- FaFile(paste("data/genomes","Bgermanica.scaffolds.fa", sep="/"))
-  genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
+  #genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
 
   genomefasta <- FaFile(values$genomefile)
 
