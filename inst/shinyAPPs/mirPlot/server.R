@@ -277,7 +277,8 @@ observeEvent(input$ButtonFold, {
     }
 
  n<-  nrow(mirnadf)
-  for (i in 1:nrow(mirnadf)){
+ for (i in 1:nrow(mirnadf)){
+    #for (i in 1:5){
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
       coord=ct2coord(makeCt(folded[2,], folded[1,]))
@@ -285,29 +286,65 @@ observeEvent(input$ButtonFold, {
       ################# Count Overhang within FOLDING ############################################
       ############################################################################################
 
-      maturecord0<-regexpr(RNAString(DNAString(mirnadf$mature[i])), folded[[1]][1])
+      maturecord00<-gregexpr(RNAString(DNAString(mirnadf$mature[i])), folded[[1]][1])
+
+       # some cases mature and star appear multiple times in prec
+      if (length(maturecord00[[1]])==1) { # if matur e appears only once
+        maturecord0<-maturecord00[[1]]
+      }else{# if appears multiple times
+        if(maturecord1[1]<starcord1[1]){ # if mature is 5p  get the first
+              maturecord0<-maturecord00[[1]][1]
+        }else{# if its 3p the last one
+           maturecord0<-maturecord00[[1]][length(maturecord00[[1]])]
+        }
+      }
       maturecord1<-range(maturecord0,maturecord0+nchar(as.character(mirnadf$mature[i]))-1)
-      starcord0<-regexpr(RNAString(DNAString(mirnadf$star[i])), folded[[1]][1])
+
+
+
+      starcord00<-gregexpr(RNAString(DNAString(mirnadf$star[i])), folded[[1]][1])
+      # some cases mature and star appear multiple times in prec
+      if (length(starcord00[[1]])==1) { # if star appears only once
+        starcord0<-starcord00[[1]]
+      }else{# if appears multiple times
+        if(maturecord1[1]<starcord1[1]){ # if mature is 5p  get the last as star
+            starcord0<-starcord00[[1]][length(starcord00[[1]])]
+        }else{# if mature its 3p the first one
+          starcord0<-starcord00[[1]][1]
+        }
+      }
       starcord1<-range(starcord0,starcord0+nchar(as.character(mirnadf$star[i]))-1)
 
-
-      ##if 5P
-      print(paste("mature is 5'",i))
+      ##if 5P mature
       if(maturecord1[1]<starcord1[1]){
+        print(paste("mature is 5'",i))
 
-        if(maturecord1[2]+1-(starcord1[1]-1) <0 ) {#if mature and star don't overlap (as it should)
+        if(maturecord1[2]+1-(starcord1[1]-1) <=0 ) {#if mature and star don't overlap (as it should)
           colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
-          colorvector<-c(rep("Orange", length(folded) ) )
+          overlapmatstar=maturecord1[2]-starcord1[1]+1
+          if (overlapmatstar>0){# if there is overlap
+
+          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Orange",length(seq(maturecord1[2]-overlapmatstar+1, starcord1[1]+overlapmatstar-1))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+          }
+          if (overlapmatstar==0){# if they dont overlap, but there is no loop
+
+            colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+            foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
+
+            foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+            foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+          }
         }
+
 
       }else{   ##################### Mature 3'
         print(paste("mature is 3'", i))
@@ -321,11 +358,22 @@ observeEvent(input$ButtonFold, {
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
 
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
-          colorvector<-c(rep("Orange", length(folded) ) )
+          overlapmatstar2=starcord1[2]-maturecord1[1]+1
+          if (overlapmatstar2>0){
+            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlapmatstar2))),rep("Orange",length(seq(starcord1[2]+overlapmatstar2+1, maturecord1[1]-overlapmatstar2-1))),rep("Red",length(seq(maturecord1[1]-overlapmatstar2, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+            foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
+            foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+          }
+          if (overlapmatstar2==0){# if overlap is zero but also no gap
+            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+            foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
-          foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
-          foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+            foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+            foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+          }
+
         }
       }
 
