@@ -319,15 +319,17 @@ observeEvent(input$ButtonFold, {
       if(maturecord1[1]<starcord1[1]){# if 5p
         print(paste("mature is 5'",i))
 
-        if(maturecord1[2]>starcord1[1]-1 ) {#if mature and star don't overlap (as it should)
+        overlap=maturecord1[2]-starcord1[1]+1
+        if(overlap<0) {#if mature and star don't overlap (as it should)
           colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
+          overlaFLAG=TRUE
           overlapmatstar=maturecord1[2]-starcord1[1]+1
-          if (overlapmatstar>0){# if there is overlap
+          if (overlap>0){# if there is overlap
 
           colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Orange",length(seq(maturecord1[2]-overlapmatstar+1, starcord1[1]+overlapmatstar-1))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
@@ -335,7 +337,7 @@ observeEvent(input$ButtonFold, {
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
           }
-          if (overlapmatstar==0){# if they dont overlap, but there is no loop
+          if (overlap==0){# if they dont overlap, but there is no loop
 
             colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
@@ -350,8 +352,10 @@ observeEvent(input$ButtonFold, {
       }else{   ##################### Mature 3'
         print(paste("mature is 3'", i))
 
+        overlap=starcord1[2]+1-maturecord1[1]
 
-        if(maturecord1[1]>starcord1[2]+1){ # if no overlap
+        if(overlap<0){ # if no overlap
+          overlap=0
           colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
@@ -359,15 +363,15 @@ observeEvent(input$ButtonFold, {
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
 
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
-          overlapmatstar2=starcord1[2]+1-maturecord1[1]
-          if (overlapmatstar2>0){
+
+          if (overlap>0){
             colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlapmatstar2))),rep("Orange",length(seq(starcord1[2]+overlapmatstar2+1, maturecord1[1]-overlapmatstar2-1))),rep("Red",length(seq(maturecord1[1]-overlapmatstar2, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
            foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
           }
-          if (overlapmatstar2==0){# if overlap is zero but also no gap
+          if (overlap==0){# if overlap is zero but also no gap
             colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
@@ -379,11 +383,8 @@ observeEvent(input$ButtonFold, {
       }
 
 
-      ### Check 1st cleaveage by drosha
+      ### Check 1st cleaveage by Drosha
         #### select first miRNA  (mature or star) nucelotide and its complemenrtaey
-        openprentesisnoblack= foldingtable[which(foldingtable$dots=="(" & !foldingtable$color=="Black" ),]
-        firstprent_complement=which(foldingtable$closeprent==openprentesisnoblack[1,4])##
-
         ## 1st I get the 1st nucleotide of the 1st miRNA (mature or star)
         firstmirnanuc5p<-min(which(foldingtable$color!="Black"))
         DroshaCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
@@ -392,7 +393,7 @@ observeEvent(input$ButtonFold, {
         DroshaCut3<-foldingtable[(lastmirnanuc5p-1):(lastmirnanuc5p+2),]
 
           ## if the matching ones is black, +2 should be Blue or Red
-          if( DroshaCut5$dots=="(" &  DroshaCut3$dots == ")" & DroshaCut5$color[3:4]!=DroshaCut3$color[1:2] & (DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) )){ # if the 4 nts have a complementary
+          if( all(DroshaCut5$dots=="(" &  DroshaCut3$dots == ")"  & (DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) ))){ # if the 4 nts have a complementary
                 print("Perfect 5p extreme overhang 1")
                 overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
                 overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
@@ -422,42 +423,35 @@ observeEvent(input$ButtonFold, {
             }
 
 
-        #### select LAST miRNA  (mature or star) nucelotide and its complemenrtaey
-        openprentesisnoblack= foldingtable[which(foldingtable$dots=="(" & !foldingtable$color=="Black" ),]
-        lastprent_complement=which(foldingtable$closeprent==openprentesisnoblack[nrow(openprentesisnoblack),4])##
 
- #### CHECKING the 2nd cleavage (loop) by Drosha?
-               if( (foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement+2),1]=="Blue"| foldingtable[(lastprent_complement+2),1]=="Red")  ){
-            print("Perfect 3p extreme overhang (Dicer)")
-            overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_animal))
-            overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_plant))
+    ########### Check 2ns cleaveage (the loop) by Dicer
+    # if no loop = bad cleavaege
+        if (overlap>=-2){
+          print("Bad mature 3p overhang 1")
+          overhang_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+          overhang_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+        }else{
+          firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
+          lastmirnanuc3p=max(which(foldingtable$color==firstcolor))
 
-            ##if match is NOT black, the +2 should be black
-          }else if(  (!foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement-3),1]=="Black") & !is.na(foldingtable[(lastprent_complement-3),1])   ){
-            print("Perfect 3p extreme overhang (Dicer)")
-            overhang2_animal<-rbind(overhang2_animal,c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_animal))
-            overhang2_plant<-rbind(overhang2_plant,c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_plant))
+          DicerCut3<-foldingtable[(lastmirnanuc3p-1):(lastmirnanuc3p+2),]
 
-            #### Semi good when oerlap is like +3
-          }else if( (foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement+3),1]=="Blue"| foldingtable[(lastprent_complement+3),1]=="Red")  ){
-            print("Semi good 3p extreme overhang (Dicer)")
-            overhang2_animal<-rbind(overhang2_animal,c("Semi good  3p cleavage overhang  (Dicer) 1", semigood_animal))
-            overhang2_plant<-rbind(overhang2_plant,c("Semi good  3p cleavage overhang  (Dicer) 1", semigood_plant))
 
-            ##if match is NOT black, the +2 should be black
-          }else if(  (!foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement-4),1]=="Black") & !is.na(foldingtable[(lastprent_complement-4),1])  ){
-            print("Semi good 3p extreme overhang (Dicer)")
-            overhang2_animal<-rbind(overhang2_animal,c("Semi good  3p cleavage overhang  (Dicer) 1", semigood_animal))
-            overhang2_plant<-rbind(overhang2_plant,c("Semi good  3p cleavage overhang  (Dicer) 1", semigood_plant))
+          firstmirnanuc5p<-min(which(foldingtable$color!="Black" & foldingtable$color!=firstcolor) )
+          DicerCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
 
+
+          ## if the matching ones is black, +2 should be Blue or Red
+          if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" & (DicerCut5$openprent[1:2] == rev(DicerCut3$closeprent[1:2]) | DicerCut5$openprent[3:4] == rev(DicerCut3$closeprent[3:4]) ))){ # if the 4 nts have a complementary
+            print("Perfect 3p extreme overhang 1")
+            overhang_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch2_animal) )
+            overhang_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_2plant))
           }else{
-            print("Bad mature 3p cleavage overhang  (Dicer)")
-            overhang2_animal<-rbind(overhang2_animal,c("bad  3p cleavage overhang  (Dicer) 1", 0))
-            overhang2_plant<-rbind(overhang2_plant,c("bad  3p cleavage overhang  (Dicer) 1", 0))
+            print("Bad mature 3p overhang 2")
+            overhang_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
+            overhang_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
           }
-
-
-
+    }
  ##############################################        ##############################################        ##############################################
 
       ###Lets adjust image parameters depending on length
