@@ -276,7 +276,7 @@ observeEvent(input$ButtonFold, {
     }
 
  n<-  nrow(mirnadf)
-  for (i in 1:nrow(mirnadf)){
+  for (i in 0:nrow(mirnadf)){
 
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
@@ -325,37 +325,41 @@ observeEvent(input$ButtonFold, {
 
 #### CHECKING the Fisrt cleavage (5p) by Drosha?
 
-        ## if the matching ones is black, +2 should be Blue or Red
-        if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-2),1]=="Blue"| foldingtable[(firstprent_complement-2),1]=="Red") ){
-              print("Perfect 5p extreme overhang 1")
-              overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
-              overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
+        if (length(firstprent_complement>0)){ # if there is actually a complementary base pair befoe the mature/star
+          ## if the matching ones is black, +2 should be Blue or Red
+          if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-2),1]=="Blue"| foldingtable[(firstprent_complement-2),1]=="Red") ){
+                print("Perfect 5p extreme overhang 1")
+                overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
+                overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
 
-    ##if match is NOT black, the +3 should be black
-        }else if(  (!foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement+3),1]=="Black") & !is.na(foldingtable[(firstprent_complement+3),1])   ){
-           overhang_animal<-rbind(overhang_animal,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal))
-           overhang_plant<-rbind(overhang_plant,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
+      ##if match is NOT black, the +3 should be black
+          }else if(  (!foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement+3),1]=="Black") & !is.na(foldingtable[(firstprent_complement+3),1])   ){
+             overhang_animal<-rbind(overhang_animal,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal))
+             overhang_plant<-rbind(overhang_plant,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
 
-    #### Semi good when oerlap is like +3
-      }else if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-3),1]=="Blue"| foldingtable[(firstprent_complement-3),1]=="Red"  ) ){
-            print("Semi good 5p extreme overhang 3")
-           overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
-           overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
+      #### Semi good when oerlap is like +3
+        }else if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-3),1]=="Blue"| foldingtable[(firstprent_complement-3),1]=="Red"  ) ){
+              print("Semi good 5p extreme overhang 3")
+             overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
+             overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
 
 
-            ##if match is NOT black, the +2 should be black
-      }else if(  !foldingtable[(firstprent_complement),1]=="Black" & foldingtable[(firstprent_complement+4),1]=="Black" & !is.na(foldingtable[(firstprent_complement+4),1])  ){
-            print("Semi good 5p extreme overhang 4")
-            overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
-            overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
+              ##if match is NOT black, the +2 should be black
+        }else if(  !foldingtable[(firstprent_complement),1]=="Black" & foldingtable[(firstprent_complement+4),1]=="Black" & !is.na(foldingtable[(firstprent_complement+4),1])  ){
+              print("Semi good 5p extreme overhang 4")
+              overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
+              overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
 
-        }else{
-          print("Bad mature 5p overhang 5")
-          overhang_animal<-rbind(overhang_animal,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
-          overhang_plant<-rbind(overhang_plant,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
-
-        }
-
+          }else{
+            print("Bad mature 5p overhang 5")
+            overhang_animal<-rbind(overhang_animal,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
+            overhang_plant<-rbind(overhang_plant,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
+            }
+          }else{
+            print("Incorrect flanking...")
+            overhang_animal<-rbind(overhang_animal, c("Incorrect flanking...", 0) )
+            overhang_plant<-rbind(overhang_plant, c("Incorrect flanking...", 0))
+          }
 
         #### select LAST miRNA  (mature or star) nucelotide and its complemenrtaey
         openprentesisnoblack= foldingtable[which(foldingtable$dots=="(" & !foldingtable$color=="Black" ),]
