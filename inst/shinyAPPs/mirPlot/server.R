@@ -429,8 +429,8 @@ observeEvent(input$ButtonFold, {
     # if no loop = bad cleavaege
         if (overlap>=-2){
           print("Bad mature 3p overhang 1")
-          overhang_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
-          overhang_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+          overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+          overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
         }else{
           firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
           lastmirnanuc3p=max(which(foldingtable$color==firstcolor))
@@ -446,12 +446,12 @@ observeEvent(input$ButtonFold, {
           if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" & !is.na(DicerCut5$openprent[1:2]) & DicerCut3$openprent[1:2])){
             if (DicerCut5$openprent[1:2] == rev(DicerCut3$closeprent[1:2]) | DicerCut5$openprent[3:4] == rev(DicerCut3$closeprent[3:4]) ){ #
               print("Perfect 3p extreme overhang 1")
-              overhang_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch2_animal) )
-              overhang_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_2plant))}
+              overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch2_animal) )
+              overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_2plant))}
           }else{
             print("Bad mature 3p overhang 2")
-            overhang_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
-            overhang_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
+            overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
+            overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
           }
     }
  ##############################################        ##############################################        ##############################################
@@ -496,10 +496,12 @@ observeEvent(input$ButtonFold, {
 
   ## scores animal / plant
   if (specie=="Animal"){
+    print("Making dataframe animal")
     mirnadf_folding<-cbind(mirnadf,foldingFigs ,"5'Cleavage"=overhang_animal[,1],"3'Cleavage"=overhang2_animal[,1] )
     output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
     overhangs_score_animal<<- as.numeric(overhang_animal[,2])+as.numeric(overhang2_animal[,2] )
   }else{
+    print("Making dataframe plant")
     mirnadf_folding<-cbind(mirnadf,foldingFigs ,"5'Cleavage"=overhang_plant[,1],"3'Cleavage"=overhang2_plant[,1] )
     output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
     overhangs_score_plant<<- as.numeric(overhang_plant[,2])+as.numeric(overhang2_plant[,2] )
