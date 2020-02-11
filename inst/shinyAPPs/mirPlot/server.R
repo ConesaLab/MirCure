@@ -408,8 +408,8 @@ observeEvent(input$ButtonFold, {
           }
         }else{
           print("Incorrect flanking 3p...")
-          overhang_animal<-rbind(overhang2_animal, c("Incorrect 3p flanking...", 0) )
-          overhang_plant<-rbind(overhang2_plant, c("Incorrect 3p flanking...", 0))
+          overhang2_animal<-rbind(overhang2_animal, c("Incorrect 3p flanking...", 0) )
+          overhang2_plant<-rbind(overhang2_plant, c("Incorrect 3p flanking...", 0))
         }
 
 
