@@ -316,10 +316,10 @@ observeEvent(input$ButtonFold, {
       starcord1<-range(starcord0,starcord0+nchar(as.character(mirnadf$star[i]))-1)
 
       ##if 5P mature
-      if(maturecord1[1]<starcord1[1]){
+      if(maturecord1[1]<starcord1[1]){# if 5p
         print(paste("mature is 5'",i))
 
-        if(maturecord1[2]+1-(starcord1[1]-1) <=0 ) {#if mature and star don't overlap (as it should)
+        if(maturecord1[2]>starcord1[1]-1 ) {#if mature and star don't overlap (as it should)
           colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
@@ -350,7 +350,7 @@ observeEvent(input$ButtonFold, {
         print(paste("mature is 3'", i))
 
 
-        if(maturecord1[1]>starcord1[1]){
+        if(maturecord1[1]>starcord1[2]+1){ # if no overlap
           colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
@@ -358,7 +358,7 @@ observeEvent(input$ButtonFold, {
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
 
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
-          overlapmatstar2=starcord1[2]-maturecord1[1]+1
+          overlapmatstar2=starcord1[2]+1-maturecord1[1]
           if (overlapmatstar2>0){
             colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlapmatstar2))),rep("Orange",length(seq(starcord1[2]+overlapmatstar2+1, maturecord1[1]-overlapmatstar2-1))),rep("Red",length(seq(maturecord1[1]-overlapmatstar2, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
