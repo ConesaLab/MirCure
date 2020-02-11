@@ -55,7 +55,7 @@ server <- function(input, output, session) {
        #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
-       #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3conflict.gff3")
+       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3conflict.gff3")
 
        return(head(precsdf))
   })
@@ -66,7 +66,7 @@ server <- function(input, output, session) {
     matdf <- readGFF(input$mature$datapath)
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
-    #matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3conflict.gff3")
+    matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3conflict.gff3")
     return(head(matdf))
    })
 
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
         stardf <- readGFF(input$star$datapath)
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
-       # stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3conflict.gff3")
+        stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3conflict.gff3")
         return(head(stardf))
  })
 
@@ -139,7 +139,7 @@ observeEvent(input$ButtonSeqs, {
 
   #genomefasta <- FaFile(paste("data/genomes","zma.AGPv4.full.fasta", sep="/"))
   #genomefasta <- FaFile(paste("data/genomes","Bgermanica.scaffolds.fa", sep="/"))
-  #genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
+  genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
 
   genomefasta <- FaFile(values$genomefile)
 
@@ -346,6 +346,7 @@ observeEvent(input$ButtonFold, {
         }
 
 
+
       }else{   ##################### Mature 3'
         print(paste("mature is 3'", i))
 
@@ -377,56 +378,56 @@ observeEvent(input$ButtonFold, {
         }
       }
 
+
+      ### Check 1st cleaveage by drosha
         #### select first miRNA  (mature or star) nucelotide and its complemenrtaey
         openprentesisnoblack= foldingtable[which(foldingtable$dots=="(" & !foldingtable$color=="Black" ),]
         firstprent_complement=which(foldingtable$closeprent==openprentesisnoblack[1,4])##
 
-#### CHECKING the Fisrt cleavage (5p) by Drosha?
+        ## 1st I get the 1st nucleotide of the 1st miRNA (mature or star)
+        firstmirnanuc5p<-min(which(foldingtable$color!="Black"))
+        DroshaCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
 
-        if (length(firstprent_complement>0)){ # if there is actually a complementary base pair befoe the mature/star
+        lastmirnanuc5p<-max(which(foldingtable$color!="Black"))
+        DroshaCut3<-foldingtable[(lastmirnanuc5p-1):(lastmirnanuc5p+2),]
+
           ## if the matching ones is black, +2 should be Blue or Red
-          if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-2),1]=="Blue"| foldingtable[(firstprent_complement-2),1]=="Red") ){
+          if( DroshaCut5$dots=="(" &  DroshaCut3$dots == ")" & DroshaCut5$color[3:4]!=DroshaCut3$color[1:2] & (DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) )){ # if the 4 nts have a complementary
                 print("Perfect 5p extreme overhang 1")
                 overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
                 overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
 
-      ##if match is NOT black, the +3 should be black
-          }else if(  (!foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement+3),1]=="Black") & !is.na(foldingtable[(firstprent_complement+3),1])   ){
-             overhang_animal<-rbind(overhang_animal,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal))
-             overhang_plant<-rbind(overhang_plant,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
-
-      #### Semi good when oerlap is like +3
-        }else if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-3),1]=="Blue"| foldingtable[(firstprent_complement-3),1]=="Red"  ) ){
-              print("Semi good 5p extreme overhang 3")
-             overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
-             overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
-
-
-              ##if match is NOT black, the +2 should be black
-        }else if(  !foldingtable[(firstprent_complement),1]=="Black" & foldingtable[(firstprent_complement+4),1]=="Black" & !is.na(foldingtable[(firstprent_complement+4),1])  ){
-              print("Semi good 5p extreme overhang 4")
-              overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
-              overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
+      # ##if match is NOT black, the +3 should be black
+      #     }else if(  (!foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement+3),1]=="Black") & !is.na(foldingtable[(firstprent_complement+3),1])   ){
+      #        overhang_animal<-rbind(overhang_animal,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal))
+      #        overhang_plant<-rbind(overhang_plant,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
+      #
+      # #### Semi good when oerlap is like +3
+      #   }else if(  (foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement-3),1]=="Blue"| foldingtable[(firstprent_complement-3),1]=="Red"  ) ){
+      #         print("Semi good 5p extreme overhang 3")
+      #        overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
+      #        overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
+      #
+      #
+      #         ##if match is NOT black, the +2 should be black
+      #   }else if(  !foldingtable[(firstprent_complement),1]=="Black" & foldingtable[(firstprent_complement+4),1]=="Black" & !is.na(foldingtable[(firstprent_complement+4),1])  ){
+      #         print("Semi good 5p extreme overhang 4")
+      #         overhang_animal<-rbind(overhang_animal,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_animal))
+      #         overhang_plant<-rbind(overhang_plant,c("Semi good 5p cleavage overhang (Drosha cutting) 1", semigood_plant))
 
           }else{
             print("Bad mature 5p overhang 5")
             overhang_animal<-rbind(overhang_animal,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
             overhang_plant<-rbind(overhang_plant,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
             }
-          }else{
-            print("Incorrect flanking 5p...")
-            overhang_animal<-rbind(overhang_animal, c("Incorrect 5p flanking...", 0) )
-            overhang_plant<-rbind(overhang_plant, c("Incorrect 5p flanking...", 0))
-          }
+
 
         #### select LAST miRNA  (mature or star) nucelotide and its complemenrtaey
         openprentesisnoblack= foldingtable[which(foldingtable$dots=="(" & !foldingtable$color=="Black" ),]
         lastprent_complement=which(foldingtable$closeprent==openprentesisnoblack[nrow(openprentesisnoblack),4])##
 
  #### CHECKING the 2nd cleavage (loop) by Drosha?
-        if (length(lastprent_complement>0)){ # if there is actually a complementary base pair befoe the mature/star
-          ## if the matching ones is black, +2 should be Blue or Red
-          if( (foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement+2),1]=="Blue"| foldingtable[(lastprent_complement+2),1]=="Red")  ){
+               if( (foldingtable[(lastprent_complement),1]=="Black") & (foldingtable[(lastprent_complement+2),1]=="Blue"| foldingtable[(lastprent_complement+2),1]=="Red")  ){
             print("Perfect 3p extreme overhang (Dicer)")
             overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_animal))
             overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang  (Dicer) 1", perfectmatch_plant))
@@ -454,11 +455,6 @@ observeEvent(input$ButtonFold, {
             overhang2_animal<-rbind(overhang2_animal,c("bad  3p cleavage overhang  (Dicer) 1", 0))
             overhang2_plant<-rbind(overhang2_plant,c("bad  3p cleavage overhang  (Dicer) 1", 0))
           }
-        }else{
-          print("Incorrect flanking 3p...")
-          overhang2_animal<-rbind(overhang2_animal, c("Incorrect 3p flanking...", 0) )
-          overhang2_plant<-rbind(overhang2_plant, c("Incorrect 3p flanking...", 0))
-        }
 
 
 
