@@ -55,6 +55,7 @@ server <- function(input, output, session) {
        #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
+       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
 
        return(head(precsdf))
   })
@@ -65,7 +66,7 @@ server <- function(input, output, session) {
     matdf <- readGFF(input$mature$datapath)
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
-
+    matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
     return(head(matdf))
    })
 
@@ -75,6 +76,7 @@ server <- function(input, output, session) {
         stardf <- readGFF(input$star$datapath)
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
+        stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3.gff3")
         return(head(stardf))
  })
 
@@ -137,6 +139,8 @@ observeEvent(input$ButtonSeqs, {
 
   #genomefasta <- FaFile(paste("data/genomes","zma.AGPv4.full.fasta", sep="/"))
   #genomefasta <- FaFile(paste("data/genomes","Bgermanica.scaffolds.fa", sep="/"))
+  genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
+
   genomefasta <- FaFile(values$genomefile)
 
   precsdf <<- try(readGFF(input$precs$datapath) )
@@ -291,11 +295,19 @@ observeEvent(input$ButtonFold, {
       if(maturecord0[1]<starcord1[1]){
         print(paste("mature is 5'",i))
 
-        colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
-        foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
+        if(maturecord1[2]+1-(starcord1[1]-1) <0 ) {#if mature and star don't overlap (as it should)
+          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+          foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
-        foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
-        foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+          foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+          foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+        }else{# If mature and star overlap (they shouldn't!) don't crash do :
+          colorvector<-c(rep("Orange", length(folded) ) )
+          foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
+
+          foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+          foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+        }
 
       }else{   ##################### Mature 3'
         print(paste("mature is 3'", i))
