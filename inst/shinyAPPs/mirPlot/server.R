@@ -277,9 +277,7 @@ observeEvent(input$ButtonFold, {
     }
 
  n<-  nrow(mirnadf)
-  #for (i in 0:nrow(mirnadf)){
-  for (i in 515:nrow(mirnadf)){
-
+  for (i in 1:nrow(mirnadf)){
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
       coord=ct2coord(makeCt(folded[2,], folded[1,]))
@@ -445,7 +443,8 @@ observeEvent(input$ButtonFold, {
                 pointSize = 2.3, lineWd = 1, nt=T,
                 dp=1, tsize=1)
                 dev.off()
-            }
+          }
+
    incProgress(1/n, detail = paste("Prec", i, "of", n))
     }
   })
@@ -630,8 +629,8 @@ observeEvent(input$ButtonExp, {
       n<-nrow(mirnadf)
 
 ### Make it fast for trials
-    for(i in 1:3 ){
-      #for(i in 1:nrow(mirnadf) ){
+    #for(i in 1:3 ){
+    for(i in 1:nrow(mirnadf) ){
 
     ##convert in GRanges
     mirname=mirnadf$ID[i]
