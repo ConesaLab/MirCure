@@ -245,6 +245,7 @@ observeEvent(input$ButtonSeqs, {
 ##############################################
 ################# Fold rpecursors   ##########
 ##############################################
+
 observeEvent(input$ButtonFold, {
 
   ################ Checks if previous step was succesdul
@@ -277,7 +278,7 @@ observeEvent(input$ButtonFold, {
 
  n<-  nrow(mirnadf)
   #for (i in 0:nrow(mirnadf)){
-  for (i in 395:nrow(mirnadf)){
+  for (i in 515:nrow(mirnadf)){
 
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
@@ -293,8 +294,8 @@ observeEvent(input$ButtonFold, {
 
 
       ##if 5P
-      if(maturecord0[1]<starcord1[1]){
-        print(paste("mature is 5'",i))
+      print(paste("mature is 5'",i))
+      if(maturecord1[1]<starcord1[1]){
 
         if(maturecord1[2]+1-(starcord1[1]-1) <0 ) {#if mature and star don't overlap (as it should)
           colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
@@ -313,11 +314,21 @@ observeEvent(input$ButtonFold, {
       }else{   ##################### Mature 3'
         print(paste("mature is 3'", i))
 
-        colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
-        foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
-        foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
-        foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+        if(maturecord1[1]<starcord1[1]){
+          colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+          foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
+
+          foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+          foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+
+        }else{# If mature and star overlap (they shouldn't!) don't crash do :
+          colorvector<-c(rep("Orange", length(folded) ) )
+
+
+          foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
+          foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
+        }
       }
 
         #### select first miRNA  (mature or star) nucelotide and its complemenrtaey
