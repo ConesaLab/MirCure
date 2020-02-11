@@ -393,11 +393,12 @@ observeEvent(input$ButtonFold, {
         DroshaCut3<-foldingtable[(lastmirnanuc5p-1):(lastmirnanuc5p+2),]
 
           ## if the matching ones is black, +2 should be Blue or Red
-          if( all(DroshaCut5$dots=="(" &  DroshaCut3$dots == ")"  & (DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) ))){ # if the 4 nts have a complementary
+          if( all(DroshaCut5$dots=="(" &  DroshaCut3$dots == ")"  & !is.na(DroshaCut5$openprent[1:2])  & !is.na(DroshaCut3$closeprent[1:2]))){
+              if(DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) ){ # if the 4 nts have a complementary
                 print("Perfect 5p extreme overhang 1")
                 overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
                 overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
-
+              }
       # ##if match is NOT black, the +3 should be black
       #     }else if(  (!foldingtable[(firstprent_complement),1]=="Black") & (foldingtable[(firstprent_complement+3),1]=="Black") & !is.na(foldingtable[(firstprent_complement+3),1])   ){
       #        overhang_animal<-rbind(overhang_animal,c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal))
@@ -442,10 +443,11 @@ observeEvent(input$ButtonFold, {
 
 
           ## if the matching ones is black, +2 should be Blue or Red
-          if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" & (DicerCut5$openprent[1:2] == rev(DicerCut3$closeprent[1:2]) | DicerCut5$openprent[3:4] == rev(DicerCut3$closeprent[3:4]) ))){ # if the 4 nts have a complementary
-            print("Perfect 3p extreme overhang 1")
-            overhang_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch2_animal) )
-            overhang_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_2plant))
+          if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" & !is.na(DicerCut5$openprent[1:2]) & DicerCut3$openprent[1:2])){
+            if (DicerCut5$openprent[1:2] == rev(DicerCut3$closeprent[1:2]) | DicerCut5$openprent[3:4] == rev(DicerCut3$closeprent[3:4]) ){ #
+              print("Perfect 3p extreme overhang 1")
+              overhang_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch2_animal) )
+              overhang_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_2plant))}
           }else{
             print("Bad mature 3p overhang 2")
             overhang_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 2", 0))
