@@ -268,13 +268,11 @@ observeEvent(input$ButtonFold, {
     semigood_plant<-NULL
 
     ## sdefine cores animal / plant
-    if (specie=="Animal"){
       perfectmatch_animal<-5
       semigood_animal<-3
-    }else{
       perfectmatch_plant<-2.5
       semigood_plant<-2
-    }
+
 
  n<-  nrow(mirnadf)
  for (i in 1:nrow(mirnadf)){
@@ -522,15 +520,15 @@ print(firstMIRoverlap)
                       print("Always hanging the same 2")
                       overhang2_animal<-rbind(overhang2_animal, c("Bad, always hanging the same arm ", 0) )
                       overhang2_plant<-rbind(overhang2_plant, c("Bad, always hanging the same arm" , 0))
-                    }else if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+2),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
+                    }else if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
                       print("Perfect Dicer 2")
                       overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p Dicer cleavage 2", perfectmatch_animal) )
                       overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavagec2", perfectmatch_plant))
-                      }else if(  sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+2),"dots"], "\\)" ))==4){
-                        print("Acceptable Dicer")
+                      }else if(  sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
+                        print("Acceptable Dicer 1")
                         overhang2_animal<-rbind(overhang2_animal, c("Acceptable 3p Dicer cleavage", perfectmatch_animal*0.9) )
                         overhang2_plant<-rbind(overhang2_plant, c("Acceptable 3p cleavage", perfectmatch_plant*0.9))
-                       }else if( sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+2),"dots"], "\\)" ))>=2) {# only one is paired
+                       }else if( sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=2) {# only one is paired
                         print("still calculating WEAK")
                         overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage", perfectmatch_animal*0.5) )
                         overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage", perfectmatch_plant*0.5))
