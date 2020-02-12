@@ -414,12 +414,14 @@ observeEvent(input$ButtonFold, {
         }
 
         ## I have the 1st nt of the miRNA located at the 5'
+      firstMIRoverlap<-"None"
 
         ###### Evaluate DROSHA cleavage!
         if(foldingtable_2[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
             if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
+              firstMIRoverlap<-"In"
               if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" ){# if 2 upstream are also colored
                   if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
                     print("Perfect Drosha")
@@ -443,7 +445,9 @@ observeEvent(input$ButtonFold, {
                 overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 1", 0) )
                 overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 1" , 0))
               }# none upstream colored
+            ### if the 1st nuc, complement balck   firstMIRoverlap<-"None"
             }else if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]=="Black" ) { #if complement of the first is a black
+                firstMIRoverlap<-"Out"
                 print("still calculating")
                 overhang_animal<-rbind(overhang_animal, c("Calculating 5p Drosha cleavage", perfectmatch_animal) )
                 overhang_plant<-rbind(overhang_plant, c("Calculating 5p cleavage", perfectmatch_plant))
@@ -465,6 +469,7 @@ observeEvent(input$ButtonFold, {
 
 
         ###### Evaluate DICER cleavage!
+        secondMIRoverlap<-"None"
         if (overlap>=-2){# if mature and star overlap, is bad!!
           print("Overlap mature and star")
           overhang2_animal<-rbind(overhang2_animal,c("Bad, No Loop", 0))
@@ -477,8 +482,13 @@ observeEvent(input$ButtonFold, {
 
           if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnaLastnuc <- Findmatchingupstream(firstmirnaLastnuc) ## Get complementary to first
+            secondMIRoverlap<-"In"
+            if(firstMIRoverlap=="In"){
+              print("Always hanging the same ")
+              overhang2_animal<-rbind(overhang2_animal, c("Always hanging the same ", 0) )
+              overhang2_plant<-rbind(overhang2_plant, c("Always hanging the same" , 0))
+            }else if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!=foldingtable_2[firstmirnaLastnuc,"color"] ){# If complementary is not same color not black
 
-            if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!=foldingtable_2[firstmirnaLastnuc,"color"] ){# If complementary is not same color not black
               if(foldingtable_2[Compl_to_firstmirnaLastnuc+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnaLastnuc+2,"color"]!="Black" ){# if 2 upstream are also colored
                 if(sum(str_count(foldingtable_2[(firstmirnaLastnuc-2):(firstmirnaLastnuc+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
                   print("Perfect Dicer")
@@ -503,9 +513,17 @@ observeEvent(input$ButtonFold, {
                 overhang2_plant<-rbind(overhang2_plant, c("Bad 3p Dicer cleavage 1" , 0))
               }# none upstream colored
             }else if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
+              secondMIRoverlap<-"Out"
+              if(firstMIRoverlap=="Out"){
+                print("Always hanging the same ")
+                overhang2_animal<-rbind(overhang2_animal, c("Always hanging the same ", 0) )
+                overhang2_plant<-rbind(overhang2_plant, c("Always hanging the same" , 0))
+              }else{
+
               print("still calculating")
               overhang2_animal<-rbind(overhang2_animal, c("Calculating 3p Dicer cleavage", perfectmatch_animal) )
               overhang2_plant<-rbind(overhang2_plant, c("Calculating 3p cleavage", perfectmatch_plant))
+              }
             }else{ #complement is same color super bad
               print("Bad Dicer 2")
               overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 2", 0) )
