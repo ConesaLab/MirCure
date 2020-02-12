@@ -424,15 +424,19 @@ observeEvent(input$ButtonFold, {
                     print("Perfect Drosha")
                     overhang_animal<-rbind(overhang_animal, c("Perfect 5p Drosha cleavage", perfectmatch_animal) )
                     overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage", perfectmatch_plant))
-                  }else{#they will at least have 1 complementary (the first)
+                  }else if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
                     print("Acceptable Drosha")
                     overhang_animal<-rbind(overhang_animal, c("Acceptable 5p Drosha cleavage", perfectmatch_animal/0.9) )
                     overhang_plant<-rbind(overhang_plant, c("Acceptable 5p cleavage", perfectmatch_plant/0.9))
+                  }else{#complementarity less than 3
+                    print("Weak Drosha 1")
+                    overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 1", perfectmatch_animal/0.5) )
+                    overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 1", perfectmatch_plant/0.5))
                   }
               }else if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
-                  print("Not great Drosha 1")
-                  overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 1", perfectmatch_animal/0.5) )
-                  overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 1", perfectmatch_plant/0.5))
+                  print("Weak Drosha 2")
+                  overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 2", perfectmatch_animal/0.5) )
+                  overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 2", perfectmatch_plant/0.5))
               }else{
                 print("Bad Drosha 1")
                 overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 1", 0) )
@@ -447,10 +451,10 @@ observeEvent(input$ButtonFold, {
               overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 2", 0) )
               overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 2" , 0))
             }
-          }else if( foldingtable_2[firstmirnanuc5p+1,"dots"]!="."){# If  first doesnt have coplementary, check 2nd
+          }else if( foldingtable_2[firstmirnanuc5p+1,"dots"]!="." & sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+2),"dots"], "\\(" ))>=3 ){# If  first doesnt have coplementary, check 2nd
               print("Could still be good")
-              overhang_animal<-rbind(overhang_animal, c("Could still be good", 0) )
-              overhang_plant<-rbind(overhang_plant, c("Could still be good" , 0))
+              overhang_animal<-rbind(overhang_animal, c("Could still be good", perfectmatch_plant/0.2) )
+              overhang_plant<-rbind(overhang_plant, c("Could still be good" , perfectmatch_plant/0.2))
             }else{ #first 2 ones no complement
               print("Bad Drosha 3")
               overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 3", 0) )
