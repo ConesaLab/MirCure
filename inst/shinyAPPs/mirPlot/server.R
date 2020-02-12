@@ -383,29 +383,138 @@ observeEvent(input$ButtonFold, {
       }
 
 
-      ### Check 1st cleaveage by Drosha
-      foldingtable_2<-foldingtable
-      foldingtable_2$dotnumeric<-0
-      foldingtable_2[foldingtable_2$dots=="(",]$dotnumeric<-(-1)
-      foldingtable_2[foldingtable_2$dots==")",]$dotnumeric<-1
 
-      foldingtable_2[firstmirnanuc5p,]
-      foldingtable_2
 
-      Findmatchingupstream(firstmirnanuc5p+1)
+      #### select first miRNA  (mature or star) nucelotide and its complemenrtaey
+        ## 1st I get the 1st nucleotide of the 1st miRNA (mature or star)
+        firstmirnanuc5p<-min(which(foldingtable$color!="Black"))
+        DroshaCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
 
-      ## find the matching base!
-      Findmatchingupstream<-function(querynt){
-        for(pos in 1:(nrow(foldingtable_2)-querynt)){
-          if(sum(foldingtable_2$dotnumeric[(querynt+1) : (querynt+pos) ]) == 1){
-            complement=pos+querynt
+        ### Check 1st cleaveage by Drosha
+        foldingtable_2<-foldingtable
+        foldingtable_2$dotnumeric<-0
+        foldingtable_2[foldingtable_2$dots=="(",]$dotnumeric<-(-1)
+        foldingtable_2[foldingtable_2$dots==")",]$dotnumeric<-1
+
+        foldingtable_2[firstmirnanuc5p,]
+        foldingtable_2
+
+        #Findmatchingupstream(firstmirnanuc5p+1)
+
+        ## find the matching base!
+        Findmatchingupstream<-function(querynt){
+          for(pos in 1:(nrow(foldingtable_2)-querynt)){
+            if(sum(foldingtable_2$dotnumeric[(querynt+1) : (querynt+pos) ]) == 1){
+              complement=pos+querynt
               return(complement)
               break()
-             }
-           }
-         }
+            }
+          }
+          return(NULL)
+        }
+
+        ## I have the 1st nt of the miRNA located at the 5'
+
+        if(foldingtable_2[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
+            Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
+
+            if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
+              if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" ){# if 2 upstream are also colored
+                  if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
+                    print("Perfect Drosha")
+                    overhang_animal<-rbind(overhang_animal, c("Perfect 5p Drosha cleavage", perfectmatch_animal) )
+                    overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage", perfectmatch_plant))
+                  }else{#they will at least have 1 complementary (the first)
+                    print("Acceptable Drosha")
+                    overhang_animal<-rbind(overhang_animal, c("Acceptable 5p Drosha cleavage", perfectmatch_animal/0.9) )
+                    overhang_plant<-rbind(overhang_plant, c("Acceptable 5p cleavage", perfectmatch_plant/0.9))
+                  }
+              }else if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
+                  print("Not great Drosha 1")
+                  overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 1", perfectmatch_animal/0.5) )
+                  overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 1", perfectmatch_plant/0.5))
+              }else{
+                print("Bad Drosha 1")
+                overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 1", 0) )
+                overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 1" , 0))
+              }# none upstream colored
+            }else if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]=="Black" ) { #if complement of the first is a black
+                print("still calculating")
+                overhang_animal<-rbind(overhang_animal, c("Calculating 5p Drosha cleavage", perfectmatch_animal) )
+                overhang_plant<-rbind(overhang_plant, c("Calculating 5p cleavage", perfectmatch_plant))
+            }else{ #complement is same color super bad
+              print("Bad Drosha 2")
+              overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 2", 0) )
+              overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 2" , 0))
+            }
+          }else if( foldingtable_2[firstmirnanuc5p+1,"dots"]!="."){# If  first doesnt have coplementary, check 2nd
+              print("Could still be good")
+              overhang_animal<-rbind(overhang_animal, c("Could still be good", 0) )
+              overhang_plant<-rbind(overhang_plant, c("Could still be good" , 0))
+            }else{ #first 2 ones no complement
+              print("Bad Drosha 3")
+              overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 3", 0) )
+              overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 3" , 0))
+            }
 
 
+
+
+
+    ########### Check 2ns cleaveage (the loop) by Dicer
+    # if no loop = bad cleavaege
+        if (overlap>=-2){
+          print("Overlap mature and star")
+          overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+          overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
+        }else{
+          firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
+          lastmirnanuc3p=max(which(foldingtable$color==firstcolor))
+
+          DicerCut3<-foldingtable[(lastmirnanuc3p-1):(lastmirnanuc3p+2),]
+
+
+          firstmirnanuc5p<-min(which(foldingtable$color!="Black" & foldingtable$color!=firstcolor) )
+          DicerCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
+
+
+          ## if the matching ones is black, +2 should be Blue or Red
+          if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" )){ ## if all 8 are paired
+            if(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4]))){#if perfectly pared 2 to 2
+              print("Perfect 3p extreme overhang 1")
+              overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatc2_animal) )
+              overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_plant))
+            }else if (all(table(DicerCut5$closeprent %in% DicerCut3$openprent)[2]>=2)){#only 1 hangs
+              print("Not Perfect 3p extreme overhang 1")
+              overhang2_animal<-rbind(overhang2_animal, c("Not perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_animal/2) )
+              overhang2_plant<-rbind(overhang2_plant, c("Not perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_plant/2))
+              }else{print("Bad mature 3p overhang 1.2")
+                overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1.2", 0))
+                overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1.2", 0))
+
+            }
+
+          #}else if(!is.na(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4])) )){
+          }else if( sum(str_count(DicerCut3$dots, "\\("))>2 & sum(str_count(DicerCut5$dots, "\\)"))>2     ){ # if thelastone before the cut has pair and the next two also, is good!
+
+             # if(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4])) ){ # if thelastone before the cut has pair and the next two also, is good!
+            if (all(table(DicerCut5$closeprent %in% DicerCut3$openprent)[2]>=2)){#only 1 hangs
+               print("Good 3p not perfect overhang 2")
+               overhang2_animal<-rbind(overhang2_animal, c("Not perfect 3p cleavage overhang (Dicer cutting) 2", perfectmatch_animal/2) )
+               overhang2_plant<-rbind(overhang2_plant, c("Note perfect 3p cleavage overhang (Dicer cutting) 2", perfectmatch_plant/2))
+              }else{
+                print("Bad mature 3p overhang 3.1")
+                overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 3.1", 0))
+                overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 3.1", 0))
+
+              }
+            }else{
+            print("Bad mature 3p overhang 2")
+            overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 3", 0))
+            overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 3", 0))
+
+          }
+        }
  ##############################################        ##############################################        ##############################################
 
       ###Lets adjust image parameters depending on length
