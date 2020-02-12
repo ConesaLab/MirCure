@@ -55,7 +55,7 @@ server <- function(input, output, session) {
        #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
-       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3conflict.gff3")
+       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
 
        return(head(precsdf))
   })
@@ -66,7 +66,7 @@ server <- function(input, output, session) {
     matdf <- readGFF(input$mature$datapath)
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
-    matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3conflict.gff3")
+    matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
     return(head(matdf))
    })
 
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
         stardf <- readGFF(input$star$datapath)
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
-        stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3conflict.gff3")
+        stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3.gff3")
         return(head(stardf))
  })
 
@@ -182,7 +182,7 @@ observeEvent(input$ButtonSeqs, {
   #starseqs <<- getSeq(genomefasta,GRanges(stardf$seqid,IRanges(start=as.numeric(stardf$start),end=as.numeric(stardf$end)),strand =precsdf$strand ) )
 
 
-  #extrabases<<-4
+  #extrabases<<-11
   extrabases<<-input$extrabases
 
   precsdf_adjusted<-precsdf
@@ -421,21 +421,25 @@ observeEvent(input$ButtonFold, {
 
             if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
               firstMIRoverlap<-"In"
-              if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" ){# if 2 upstream are also colored
+              if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" ){# if only 2 upstream are also colored
                   if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
                     print("Perfect Drosha")
                     overhang_animal<-rbind(overhang_animal, c("Perfect 5p Drosha cleavage", perfectmatch_animal) )
                     overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage", perfectmatch_plant))
-                  }else if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
+                  }else if(foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" & sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
                     print("Acceptable Drosha")
                     overhang_animal<-rbind(overhang_animal, c("Acceptable 5p Drosha cleavage", perfectmatch_animal*0.9) )
                     overhang_plant<-rbind(overhang_plant, c("Acceptable 5p cleavage", perfectmatch_plant*0.9))
-                  }else{#complementarity less than 3
+                  }else if ( sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ) {#complementarity less than 3
                     print("Weak Drosha 1")
                     overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 1", perfectmatch_animal*0.5) )
                     overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 1", perfectmatch_plant*0.5))
+                  }else{
+                    print("Bad Drosha 4")
+                    overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 4", 0) )
+                    overhang_plant<- rbind(overhang_plant, c("Bad Drosha cleavage 4" , 0))
                   }
-              }else if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
+              }else if( (foldingtable_2[(Compl_to_firstmirnanuc5p+3),"color"]=="Black" |foldingtable_2[(Compl_to_firstmirnanuc5p+4),"color"]=="Black") & foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
                   print("Weak Drosha 2")
                   overhang_animal<-rbind(overhang_animal, c("Weak 5p Drosha cleavage 2", perfectmatch_animal*0.5) )
                   overhang_plant<-rbind(overhang_plant, c("Weak 5p cleavage 2", perfectmatch_plant*0.5))
@@ -523,18 +527,24 @@ print(firstMIRoverlap)
                       print("Always hanging the same 2")
                       overhang2_animal<-rbind(overhang2_animal, c("Bad, always hanging the same arm ", 0) )
                       overhang2_plant<-rbind(overhang2_plant, c("Bad, always hanging the same arm" , 0))
-                    }else if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
-                      print("Perfect Dicer 2")
+                    }else if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
+                     # if hanging 2 and good matches
+                       print("Perfect Dicer 2")
                       overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p Dicer cleavage 2", perfectmatch_animal) )
                       overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavagec2", perfectmatch_plant))
-                      }else if(  sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
+                      }else if(  foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
                         print("Acceptable Dicer 1")
                         overhang2_animal<-rbind(overhang2_animal, c("Acceptable 3p Dicer cleavage", perfectmatch_animal*0.9) )
                         overhang2_plant<-rbind(overhang2_plant, c("Acceptable 3p cleavage", perfectmatch_plant*0.9))
-                       }else if( sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=2) {# only one is paired
-                        print("still calculating WEAK")
+                       }else if( ((foldingtable_2[(Compl_to_firstmirnaLastnuc+3),"color"]!="Black" | foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black")) & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3) {#
+                        #if hanging 3 and few mismatches
+                         print("WEAK")
                         overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage", perfectmatch_animal*0.5) )
                         overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage", perfectmatch_plant*0.5))
+                       }else{
+                         print("Bad Dicer 4")
+                         overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 4", 0) )
+                         overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage 4" , 0))
                        }
           }else if(foldingtable_2[firstmirnaLastnuc-1,]!="."){# if 2nd has a pair
             print("still calculating WORKING ON IT")
