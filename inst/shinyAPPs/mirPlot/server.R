@@ -518,9 +518,13 @@ print(firstMIRoverlap)
                       overhang2_animal<-rbind(overhang2_animal, c("Bad loop cleavage (Dicer), 3p not hanging", 0) )
                       overhang2_plant<-rbind(overhang2_plant, c("Bad Loop cleavage, 3p not hanging" , 0))
                     }
-          }else if(foldingtable_2[(firstmirnaLastnuc-1),]!="."){# if 2nd has a pair
+          }else if(foldingtable_2[(firstmirnaLastnuc-1),"dots"]!="."){# if 2nd has a pair
                 Compl_to_firstmirnaPENULTtnuc<-Findmatchingupstream(firstmirnaLastnuc-1)
-                if(foldingtable_2[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
+                if (is.null(Findmatchingupstream(firstmirnaLastnuc-1))){
+                    print("Not normal structure")
+                    overhang2_animal<-rbind(overhang2_animal, c("Uncommon structure", 0) )
+                    overhang2_plant<-rbind(overhang2_plant, c("Uncommon cleavage" , 0))
+                }else if( foldingtable_2[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
                   print("Acceptable Dicer Loop 1b")
                   overhang2_animal<-rbind(overhang2_animal, c("Acceptable Loop cleavage (Dicer) cleavage", perfectmatch_animal*0.9) )
                   overhang2_plant<-rbind(overhang2_plant, c("Acceptable Loop cleavage", perfectmatch_plant*0.9))
