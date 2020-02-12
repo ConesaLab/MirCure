@@ -453,7 +453,7 @@ observeEvent(input$ButtonFold, {
             }else{ #complement is same color super bad
               print("Bad Drosha 2")
               overhang_animal<-rbind(overhang_animal, c("Bad Drosha cleavage 2", 0) )
-              overhang_plant<-rbind(overhang_plant, c("Bad Drosha cleavage 2" , 0))
+              overhang_plant<- rbind(overhang_plant, c("Bad Drosha cleavage 2" , 0))
             }
           }else if( !is.null(Findmatchingupstream(firstmirnanuc5p+1))){## if first no, pair, but second yes
             if(foldingtable_2[firstmirnanuc5p+1,"dots"]!="." & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!="Black" & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!=foldingtable_2[firstmirnanuc5p,"color"]  ){# If  first doesnt have coplementary, check 2nd
@@ -484,6 +484,9 @@ print(firstMIRoverlap)
           firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
           firstmirnaLastnuc=max(which(foldingtable$color==firstcolor))
           Compl_to_firstmirnaLastnuc<-Findmatchingupstream(firstmirnaLastnuc)
+
+          if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
+            Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
           if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
             firstMIRoverlap<-"In"
@@ -532,7 +535,15 @@ print(firstMIRoverlap)
                         print("still calculating WEAK")
                         overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage", perfectmatch_animal*0.5) )
                         overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage", perfectmatch_plant*0.5))
-                      }
+                       }
+          }else if(foldingtable_2[firstmirnaLastnuc-1,]!="."){# if 2nd has a pair
+            print("still calculating WORKING ON IT")
+            overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage WORKING ON IT", perfectmatch_animal*0.5) )
+            overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage WORKING ON IT", perfectmatch_plant*0.5))
+              }else{ #complement is same color super bad
+                print("Bad Dicer 3")
+                overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 3", 0) )
+                overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage 3" , 0))}
           }else{ #complement is same color super bad
             print("Bad Dicer 2")
             overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 2", 0) )
