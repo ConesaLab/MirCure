@@ -384,84 +384,28 @@ observeEvent(input$ButtonFold, {
 
 
       ### Check 1st cleaveage by Drosha
-        #### select first miRNA  (mature or star) nucelotide and its complemenrtaey
-        ## 1st I get the 1st nucleotide of the 1st miRNA (mature or star)
-        firstmirnanuc5p<-min(which(foldingtable$color!="Black"))
-        DroshaCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
+      foldingtable_2<-foldingtable
+      foldingtable_2$dotnumeric<-0
+      foldingtable_2[foldingtable_2$dots=="(",]$dotnumeric<-(-1)
+      foldingtable_2[foldingtable_2$dots==")",]$dotnumeric<-1
 
-        lastmirnanuc5p<-max(which(foldingtable$color!="Black"))
-        DroshaCut3<-foldingtable[(lastmirnanuc5p-1):(lastmirnanuc5p+2),]
+      foldingtable_2[firstmirnanuc5p,]
+      foldingtable_2
 
-          ## if the matching ones is black, +2 should be Blue or Red
-          if( all(DroshaCut5$dots=="(" &  DroshaCut3$dots == ")" )){
-              if(all(DroshaCut5$openprent[1:2] == rev(DroshaCut3$closeprent[1:2]) | DroshaCut5$openprent[3:4] == rev(DroshaCut3$closeprent[3:4]) )){ # if the 4 nts have a complementary
-                print("Perfect 5p extreme overhang 1")
-                overhang_animal<-rbind(overhang_animal, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_animal) )
-                overhang_plant<-rbind(overhang_plant, c("Perfect 5p cleavage overhang (Drosha cutting) 1", perfectmatch_plant))
-              }
+      Findmatchingupstream(firstmirnanuc5p+1)
 
-          }else{
-            print("Bad mature 5p overhang 5")
-            overhang_animal<-rbind(overhang_animal,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
-            overhang_plant<-rbind(overhang_plant,c("Bad 5p cleavage overhang (Drosha cutting) 1", 0))
-            }
-
+      ## find the matching base!
+      Findmatchingupstream<-function(querynt){
+        for(pos in 1:(nrow(foldingtable_2)-querynt)){
+          if(sum(foldingtable_2$dotnumeric[(querynt+1) : (querynt+pos) ]) == 1){
+            complement=pos+querynt
+              return(complement)
+              break()
+             }
+           }
+         }
 
 
-    ########### Check 2ns cleaveage (the loop) by Dicer
-    # if no loop = bad cleavaege
-        if (overlap>=-2){
-          print("Overlap mature and star")
-          overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
-          overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1", 0))
-        }else{
-          firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
-          lastmirnanuc3p=max(which(foldingtable$color==firstcolor))
-
-          DicerCut3<-foldingtable[(lastmirnanuc3p-1):(lastmirnanuc3p+2),]
-
-
-          firstmirnanuc5p<-min(which(foldingtable$color!="Black" & foldingtable$color!=firstcolor) )
-          DicerCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
-
-
-          ## if the matching ones is black, +2 should be Blue or Red
-          if( all(DicerCut5$dots==")" &  DicerCut3$dots == "(" )){ ## if all 8 are paired
-            if(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4]))){#if perfectly pared 2 to 2
-              print("Perfect 3p extreme overhang 1")
-              overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatc2_animal) )
-              overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_plant))
-            }else if (all(table(DicerCut5$closeprent %in% DicerCut3$openprent)[2]>=2)){#only 1 hangs
-              print("Not Perfect 3p extreme overhang 1")
-              overhang2_animal<-rbind(overhang2_animal, c("Not perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_animal/2) )
-              overhang2_plant<-rbind(overhang2_plant, c("Not perfect 3p cleavage overhang (Dicer cutting) 1", perfectmatch_plant/2))
-              }else{print("Bad mature 3p overhang 1.2")
-                overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 1.2", 0))
-                overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 1.2", 0))
-
-            }
-
-          #}else if(!is.na(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4])) )){
-          }else if( sum(str_count(DicerCut3$dots, "\\("))>2 & sum(str_count(DicerCut5$dots, "\\)"))>2     ){ # if thelastone before the cut has pair and the next two also, is good!
-
-             # if(all(DicerCut5$closeprent[1:2] == rev(DicerCut3$openprent[1:2]) | DicerCut5$closeprent[3:4] == rev(DicerCut3$openprent[3:4])) ){ # if thelastone before the cut has pair and the next two also, is good!
-            if (all(table(DicerCut5$closeprent %in% DicerCut3$openprent)[2]>=2)){#only 1 hangs
-               print("Good 3p not perfect overhang 2")
-               overhang2_animal<-rbind(overhang2_animal, c("Not perfect 3p cleavage overhang (Dicer cutting) 2", perfectmatch_animal/2) )
-               overhang2_plant<-rbind(overhang2_plant, c("Note perfect 3p cleavage overhang (Dicer cutting) 2", perfectmatch_plant/2))
-              }else{
-                print("Bad mature 3p overhang 3.1")
-                overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 3.1", 0))
-                overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 3.1", 0))
-
-              }
-            }else{
-            print("Bad mature 3p overhang 2")
-            overhang2_animal<-rbind(overhang2_animal,c("Bad 3p cleavage overhang (Dicer cutting) 3", 0))
-            overhang2_plant<-rbind(overhang2_plant,c("Bad 3p cleavage overhang (Dicer cutting) 3", 0))
-
-          }
-        }
  ##############################################        ##############################################        ##############################################
 
       ###Lets adjust image parameters depending on length
