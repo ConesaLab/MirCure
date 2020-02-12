@@ -492,49 +492,8 @@ print(firstMIRoverlap)
           if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
-            #if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]!="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc-1),"color"]!="Black"  ){# If complementary is not same color not black
-
-              # print("Bad Dicer 1a")
-              # overhang2_animal<-rbind(overhang2_animal, c("Bad loop cleavage (Dicer), 3 no hanging", 0) )
-              # overhang2_plant<-rbind(overhang2_plant, c("Bad lop cleaveage, 3p not hanging" , 0))
-
-            #   firstMIRoverlap<-"In"
-            #      # if(firstMIRoverlap=="In"){
-            #      #   print("Always hanging the same 1 ")
-            #      #   overhang2_animal<-rbind(overhang2_animal, c("Bad, always hanging the same arm", 0) )
-            #      #   overhang2_plant<-rbind(overhang2_plant, c("Bad, always hanging the same arm" , 0))
-            #      # }else
-            #        if(foldingtable_2[Compl_to_firstmirnaLastnuc+1,"color"]!="Black" ){# if 2 upstream are also colored
-            #             # if(sum(str_count(foldingtable_2[(firstmirnaLastnuc-2):(firstmirnaLastnuc+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
-            #             #   print("Perfect Dicer")
-            #             #   overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p Dicer cleavage", perfectmatch_animal) )
-            #             #   overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavage", perfectmatch_plant))
-            #             # }else if(sum(str_count(foldingtable_2[(firstmirnaLastnuc-2):(firstmirnaLastnuc+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
-            #             #   print("Acceptable Dicer")
-            #             #   overhang2_animal<-rbind(overhang2_animal, c("Acceptable 3p Dicer cleavage", perfectmatch_animal*0.9) )
-            #             #   overhang2_plant<-rbind(overhang2_plant, c("Acceptable 3p cleavage", perfectmatch_plant*0.9))
-            #             # }else{#complementarity less than 3
-            #             #   print("Weak Dicer 1")
-            #             #   overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage 1", perfectmatch_animal*0.5) )
-            #             #   overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage 1", perfectmatch_plant*0.5))
-            #             # }
-            #     }else if(foldingtable_2[Compl_to_firstmirnaLastnuc+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
-            #               print("Weak Dicer 2")
-            #               overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage 2", perfectmatch_animal*0.5) )
-            #               overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage 2", perfectmatch_plant*0.5))
-            #             }else{
-            #               print("Bad Dicer 1")
-            #               overhang2_animal<-rbind(overhang2_animal, c("Bad 3p Dicer cleavage 1", 0) )
-            #               overhang2_plant<-rbind(overhang2_plant, c("Bad 3p Dicer cleavage 1" , 0))
-            #             }
-            #}else
             if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
                     secondMIRoverlap<-"Out"
-                          # if(firstMIRoverlap=="Out"){
-                          #   print("Always hanging the same 2")
-                          #   overhang2_animal<-rbind(overhang2_animal, c("Bad, always hanging the same arm ", 0) )
-                          #   overhang2_plant<-rbind(overhang2_plant, c("Bad, always hanging the same arm" , 0))
-                          # }else
                             if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
                            # if hanging 2 and good matches
                              print("Perfect Dicer 2")
@@ -559,10 +518,19 @@ print(firstMIRoverlap)
                       overhang2_animal<-rbind(overhang2_animal, c("Bad loop cleavage (Dicer), 3p not hanging", 0) )
                       overhang2_plant<-rbind(overhang2_plant, c("Bad Loop cleavage, 3p not hanging" , 0))
                     }
-          }else if(foldingtable_2[firstmirnaLastnuc-1,]!="."){# if 2nd has a pair
-            print("still calculating WORKING ON IT")
-            overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage WORKING ON IT", perfectmatch_animal*0.5) )
-            overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage WORKING ON IT", perfectmatch_plant*0.5))
+          }else if(foldingtable_2[(firstmirnaLastnuc-1),]!="."){# if 2nd has a pair
+                Compl_to_firstmirnaPENULTtnuc<-Findmatchingupstream(firstmirnaLastnuc-1)
+                if(foldingtable_2[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
+                  print("Acceptable Dicer Loop 1b")
+                  overhang2_animal<-rbind(overhang2_animal, c("Acceptable Loop cleavage (Dicer) cleavage", perfectmatch_animal*0.9) )
+                  overhang2_plant<-rbind(overhang2_plant, c("Acceptable Loop cleavage", perfectmatch_plant*0.9))
+
+                }else{
+                  print("Bad Dicer 1b")
+                  overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage", 0) )
+                  overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage" , 0))
+                }
+
               }else{ #complement is same color super bad
                 print("Bad Dicer 3")
                 overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 3", 0) )
