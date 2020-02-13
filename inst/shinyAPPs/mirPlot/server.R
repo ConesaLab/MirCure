@@ -418,6 +418,7 @@ observeEvent(input$ButtonFold, {
         if(foldingtable_2[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
+          if(!is.null(Compl_to_firstmirnanuc5p)){
             if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
               firstMIRoverlap<-"In"
               if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" ){# if only 2 upstream are also colored
@@ -458,6 +459,11 @@ observeEvent(input$ButtonFold, {
               overhang_animal<-rbind(overhang_animal, c("Bad pri-miRNA (Drosha) cleavage", 0) )
               overhang_plant<- rbind(overhang_plant, c("Bad pri-miRNA cleavage" , 0))
             }
+          }else{
+            overhang_animal<-rbind(overhang_animal, c("Uncommon structure", 0) )
+            overhang_plant<-rbind(overhang_plant, c("Uncommon cleavage" , 0))
+            }
+
           }else if( !is.null(Findmatchingupstream(firstmirnanuc5p+1))){## if first no, pair, but second yes
             if(foldingtable_2[firstmirnanuc5p+1,"dots"]!="." & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!="Black" & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!=foldingtable_2[firstmirnanuc5p,"color"]  ){# If  first doesnt have coplementary, check 2nd
               firstMIRoverlap<-"In"
@@ -491,6 +497,8 @@ print(firstMIRoverlap)
           if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
+            if(!is.null(Compl_to_firstmirnanuc5p)){
+
             if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
                     secondMIRoverlap<-"Out"
                             if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
@@ -517,6 +525,10 @@ print(firstMIRoverlap)
                       overhang2_animal<-rbind(overhang2_animal, c("Bad loop cleavage (Dicer), 3p not hanging", 0) )
                       overhang2_plant<-rbind(overhang2_plant, c("Bad Loop cleavage, 3p not hanging" , 0))
                     }
+          }else{
+                    overhang2_animal<-rbind(overhang2_animal, c("Uncommon structure", 0) )
+                    overhang2_plant<-rbind(overhang2_plant, c("Uncommon cleavage" , 0))}
+
           }else if(foldingtable_2[(firstmirnaLastnuc-1),"dots"]!="."){# if 2nd has a pair
                 Compl_to_firstmirnaPENULTtnuc<-Findmatchingupstream(firstmirnaLastnuc-1)
                 if (is.null(Findmatchingupstream(firstmirnaLastnuc-1))){
