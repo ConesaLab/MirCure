@@ -326,10 +326,9 @@ observeEvent(input$ButtonFold, {
           foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
           overlaFLAG=TRUE
-          overlapmatstar=maturecord1[2]-starcord1[1]+1
           if (overlap>0){# if there is overlap
 
-          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Orange",length(seq(maturecord1[2]-overlapmatstar+1, starcord1[1]+overlapmatstar-1))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overla))),rep("Orange",length(seq(maturecord1[2]-overlap+1, starcord1[1]+overlap-1))),rep("Blue",length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -337,7 +336,7 @@ observeEvent(input$ButtonFold, {
           }
           if (overlap==0){# if they dont overlap, but there is no loop
 
-            colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapmatstar))),rep("Blue",length(seq(starcord1[1]+overlapmatstar, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+            colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlapm))),rep("Blue",length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -363,7 +362,7 @@ observeEvent(input$ButtonFold, {
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
 
           if (overlap>0){
-            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlapmatstar2))),rep("Orange",length(seq(starcord1[2]+overlapmatstar2+1, maturecord1[1]-overlapmatstar2-1))),rep("Red",length(seq(maturecord1[1]-overlapmatstar2, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlap))),rep("Orange",length(seq(starcord1[2]+overlap+1, maturecord1[1]-overlap-1))),rep("Red",length(seq(maturecord1[1]-overlap, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
