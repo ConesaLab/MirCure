@@ -281,7 +281,7 @@ observeEvent(input$ButtonFold, {
 
  n<-  nrow(mirnadf)
  for (i in 1:nrow(mirnadf)){
-   if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
+   #if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
 
     #for (i in 1:5){
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
@@ -304,6 +304,9 @@ observeEvent(input$ButtonFold, {
         }
       }
       maturecord1<-range(maturecord0,maturecord0+nchar(as.character(mirnadf$mature[i]))-1)
+
+
+      if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
 
 
 
@@ -603,7 +606,7 @@ print(firstMIRoverlap)
           }
 
    incProgress(1/n, detail = paste("Prec", i, "of", n))
-    }# close loop for eac prec
+    }# close loop for each prec
   })# close section folding
 
   print(paste("Good here!! 1", i))
