@@ -146,12 +146,12 @@ observeEvent(input$ButtonSeqs, {
   genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
   genomefasta <- FaFile(paste("data/genomes",'Homo.fa', sep="/"))
 
+
   genomefasta <- FaFile(values$genomefile)
 
   precsdf <<- try(readGFF(input$precs$datapath) )
   matdf <<- try(readGFF(input$mature$datapath) )
   stardf <<- try(readGFF(input$star$datapath) )
-
 
 
   #if any try fails:
@@ -281,6 +281,8 @@ observeEvent(input$ButtonFold, {
 
  n<-  nrow(mirnadf)
  for (i in 1:nrow(mirnadf)){
+   if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
+
     #for (i in 1:5){
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
@@ -558,7 +560,14 @@ print(firstMIRoverlap)
                 overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage 3" , 0))}
 
           }
+}else{
+  print("To many Ns in  precursor!")
+  overhang_animal<-rbind(overhang_animal, c(paste("Too many Ns in prec", str_count(mirnadf$precursor[i], "N")), 0))
+  overhang_plant<-rbind(overhang_plant, c(paste("Too many Ns in prec", str_count(mirnadf$precursor[i], "N")), 0))
+  overhang2_animal<-rbind(overhang2_animal, c(paste("Too many Ns in prec", str_count(mirnadf$precursor[i], "N")), 0))
+  overhang2_plant<-rbind(overhang2_plant, c(paste("Too many Ns in prec", str_count(mirnadf$precursor[i], "N")), 0))
 
+}# if more than 20 Ns in precursor
 
 
 
@@ -594,8 +603,8 @@ print(firstMIRoverlap)
           }
 
    incProgress(1/n, detail = paste("Prec", i, "of", n))
-    }
-  })
+    }# close loop for eac prec
+  })# close section folding
 
   print(paste("Good here!! 1", i))
   foldingFigs<-paste("<img src=\"images/",mirnadf$ID,"_fold.jpg\" width=\"500\ height=\"180\"></img>", sep="")
