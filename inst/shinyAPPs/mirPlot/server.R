@@ -283,7 +283,7 @@ observeEvent(input$ButtonFold, {
  for (i in 1:nrow(mirnadf)){
    #if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
 
-    #for (i in 1:5){
+
       #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
       folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
       coord=ct2coord(makeCt(folded[2,], folded[1,]))
