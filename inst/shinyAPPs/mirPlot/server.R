@@ -56,6 +56,7 @@ server <- function(input, output, session) {
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
        precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
+       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNApre_from361.gff3")
 
        return(head(precsdf))
   })
@@ -67,6 +68,8 @@ server <- function(input, output, session) {
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
     matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
+    matdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA5P_from361.gff3")
+
     return(head(matdf))
    })
 
@@ -77,6 +80,7 @@ server <- function(input, output, session) {
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
         stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3.gff3")
+        stardf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA3P_from361.gff3")
         return(head(stardf))
  })
 
@@ -140,6 +144,7 @@ observeEvent(input$ButtonSeqs, {
   #genomefasta <- FaFile(paste("data/genomes","zma.AGPv4.full.fasta", sep="/"))
   #genomefasta <- FaFile(paste("data/genomes","Bgermanica.scaffolds.fa", sep="/"))
   genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
+  genomefasta <- FaFile(paste("data/genomes",'Homo.fa', sep="/"))
 
   genomefasta <- FaFile(values$genomefile)
 
@@ -415,6 +420,7 @@ observeEvent(input$ButtonFold, {
 
 
         ###### Evaluate DROSHA cleavage!
+
         if(foldingtable_2[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
 
@@ -492,12 +498,12 @@ print(firstMIRoverlap)
       }else{
           firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
           firstmirnaLastnuc=max(which(foldingtable$color==firstcolor))
-          Compl_to_firstmirnaLastnuc<-Findmatchingupstream(firstmirnaLastnuc)
+
 
           if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
-            Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
+            Compl_to_firstmirnaLastnuc<-Findmatchingupstream(firstmirnaLastnuc)
 
-            if(!is.null(Compl_to_firstmirnanuc5p)){
+            if(!is.null(Compl_to_firstmirnaLastnuc)){
 
             if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
                     secondMIRoverlap<-"Out"
