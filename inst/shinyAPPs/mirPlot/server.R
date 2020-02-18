@@ -35,10 +35,75 @@ perfectmatch_plant<<-2.5
 acceptable_plant<<-2
 suspicious_plant<<-1.5
 
-# bad =0
+
+Nolooppenalty<<-(-5) # if there is no loop at all, is bad for sure
+# bad & uncommon structures  = 0
+
 
 ## miRNA arm lengths
 penalty_length<<-(-2) # penalty applied for  3p and 5p if <18 or >23
+
+## Expression thresholds (applied to each arm)
+#more reads than ExpLevel1
+ExpLevel1_animal<<- 5 #minim reads
+ExpLevel1_pointsAnimal<<-3
+ExpLevel1_pointsPlant<<-5
+
+#more reads than ExpLevel2
+ExpLevel2<<-10 #minim reads
+ExpLevel2_pointsAnimal<<-6
+ExpLevel2_pointsPlant<<-6
+
+#more reads than ExpLevel3
+ExpLevel3<<-100 #minim reads
+ExpLevel3_pointsAnimal<<-8
+ExpLevel3_pointsPlant<<-8
+
+#Too many reads in loop has a penalty
+loopreadthreshold<<-0.8  #if loop contains more than X% of the pre-miRNA reads
+penatlytoomanyreadsloopAnimal<<-(-5)
+penatlytoomanyreadsloopPlant<<-(-5)
+
+#Too many reads in loop has a penalty
+loopreadthreshold<<-0.8  #if loop contains more than X% of the pre-miRNA reads
+penatlytoomanyreadsloopAnimal<<-(-5)
+penatlytoomanyreadsloopPlant<<-(-5)
+
+###comservation score
+#### >20 miRNAs in mirbase identical
+conservation_20id_Animal<<-10
+conservation_20id_Plant<<-20
+
+#### 6-20 miRNAs identicals, + similar (same seed) >20
+conservation_6_20id20_Animal<<-10
+conservation_6_20id20_Plant<<-20
+
+#### 2-5 miRNAs identicals, + similar (same seed) >20
+conservation_2_5id20_Animal<<-10
+conservation_2_5id20_Plant<<-20
+
+#### 6-20 miRNAs identicals, + similar (same seed) <20
+conservation_6_20id_Animal<<-10
+conservation_6_20id_Plant<<-20
+
+#### 2-5 miRNAs identicals, + similar (same seed) <20
+conservation_2_5id_Animal<<-10
+conservation_2_5id_Plant<<-20
+
+#### 0 identicals, + similar (same seed) >20
+conservation_0id20_Animal<<-10
+conservation_0id20_Plant<<-20
+
+#### 0 identicals, + similar (same seed) <20
+conservation_0id_Animal<<-10
+conservation_0id_Plant<<-20
+
+
+#### Final Score Formula
+
+#### Threshold
+
+
 
 
 ###########################################
@@ -452,12 +517,12 @@ observeEvent(input$ButtonFold, {
                     overhang_plant<-rbind(overhang_plant, c("Perfect pri-miRNA cleavage", perfectmatch_plant))
                   }else if(foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" & sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
                     print("Acceptable Drosha")
-                    overhang_animal<-rbind(overhang_animal, c("Acceptable pri-miRNA (Drosha) cleavage", perfectmatch_animal*0.9) )
-                    overhang_plant<-rbind(overhang_plant, c("Acceptable pri-miRNA cleavage", perfectmatch_plant*0.9))
+                    overhang_animal<-rbind(overhang_animal, c("Acceptable pri-miRNA (Drosha) cleavage", acceptable_animal) )
+                    overhang_plant<-rbind(overhang_plant, c("Acceptable pri-miRNA cleavage", acceptable_plant))
                   }else if ( sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ) {#complementarity less than 3
                     print("Weak Drosha 1")
-                    overhang_animal<-rbind(overhang_animal, c("Weak pri-miRNA (Drosha) cleavage", perfectmatch_animal*0.5) )
-                    overhang_plant<-rbind(overhang_plant, c("Weak pri-miRNA cleavage", perfectmatch_plant*0.5))
+                    overhang_animal<-rbind(overhang_animal, c("Suspicious pri-miRNA (Drosha) cleavage", suspicious_animal) )
+                    overhang_plant<-rbind(overhang_plant, c("Suspicious pri-miRNA cleavage", suspicious_plant))
                   }else{
                     print("Bad Drosha 4")
                     overhang_animal<-rbind(overhang_animal, c("Bad pri-miRNA (Drosha) cleavage", 0) )
@@ -465,8 +530,8 @@ observeEvent(input$ButtonFold, {
                   }
               }else if( (foldingtable_2[(Compl_to_firstmirnanuc5p+3),"color"]=="Black" |foldingtable_2[(Compl_to_firstmirnanuc5p+4),"color"]=="Black") & foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
                   print("Weak Drosha 2")
-                  overhang_animal<-rbind(overhang_animal, c("Weak pri-miRNA (Drosha) cleavage", perfectmatch_animal*0.5) )
-                  overhang_plant<-rbind(overhang_plant, c("Weak pri-miRNA cleavage", perfectmatch_plant*0.5))
+                  overhang_animal<-rbind(overhang_animal, c("Suspicious pri-miRNA (Drosha) cleavage", suspicious_animal) )
+                  overhang_plant<-rbind(overhang_plant, c("Suspicious pri-miRNA cleavage", suspicious_plant))
               }else{
                 print("Bad Drosha 1")
                 overhang_animal<-rbind(overhang_animal, c("Bad pri-miRNA (Drosha) cleavage", 0) )
@@ -492,8 +557,8 @@ observeEvent(input$ButtonFold, {
             if(foldingtable_2[firstmirnanuc5p+1,"dots"]!="." & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!="Black" & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!=foldingtable_2[firstmirnanuc5p,"color"]  ){# If  first doesnt have coplementary, check 2nd
               firstMIRoverlap<-"In"
               print("Could still be good")
-              overhang_animal<-rbind(overhang_animal, c("Could still be good pri-miRNA (Drosha) cleavage", perfectmatch_animal*0.2) )
-              overhang_plant<-rbind(overhang_plant, c("Could still be good pri-miRNA cleavaeg" , perfectmatch_plant*0.2))
+              overhang_animal<-rbind(overhang_animal, c("Acceptable pri-miRNA (Drosha) cleavage", acceptable_animal) )
+              overhang_plant<-rbind(overhang_plant, c("CAcceptable pri-miRNA cleavaeg" , acceptable_animal))
               }else{ #first 2 ones no complement
                 print("Bad Drosha 3")
                 overhang_animal<-rbind(overhang_animal, c("Bad pri-miRNA (Drosha)cleavage", 0) )
@@ -511,8 +576,8 @@ print(firstMIRoverlap)
       secondMIRoverlap<-"None"
       if (overlap>=-2){# if mature and star overlap, is bad!!
           print("Overlap mature and star")
-          overhang2_animal<-rbind(overhang2_animal,c("Bad, No Loop", 0))
-          overhang2_plant<-rbind(overhang2_plant,c("Bad, No Loop", 0))
+          overhang2_animal<-rbind(overhang2_animal,c("Bad, No Loop", Nolooppenalty))
+          overhang2_plant<-rbind(overhang2_plant,c("Bad, No Loop", Nolooppenalty))
       }else{
           firstcolor<-foldingtable[min(which(foldingtable$color!="Black")),"color"]
           firstmirnaLastnuc=max(which(foldingtable$color==firstcolor))
@@ -528,21 +593,21 @@ print(firstMIRoverlap)
                             if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
                            # if hanging 2 and good matches
                              print("Perfect Dicer 2")
-                            overhang2_animal<-rbind(overhang2_animal, c("Perfect 3p Dicer cleavage 2", perfectmatch_animal) )
-                            overhang2_plant<-rbind(overhang2_plant, c("Perfect 3p cleavagec2", perfectmatch_plant))
+                            overhang2_animal<-rbind(overhang2_animal, c("Perfect loop (Dicer) cleavage", perfectmatch_animal) )
+                            overhang2_plant<-rbind(overhang2_plant, c("Perfect loop cleavage", perfectmatch_plant))
                             }else if(  foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
                               print("Acceptable Dicer 1")
-                              overhang2_animal<-rbind(overhang2_animal, c("Acceptable 3p Dicer cleavage", perfectmatch_animal*0.9) )
-                              overhang2_plant<-rbind(overhang2_plant, c("Acceptable 3p cleavage", perfectmatch_plant*0.9))
+                              overhang2_animal<-rbind(overhang2_animal, c("Acceptable loop (Dicer) cleavage", acceptable_animal) )
+                              overhang2_plant<-rbind(overhang2_plant, c("Acceptable loop cleavage", acceptable_plant))
                              }else if( ((foldingtable_2[(Compl_to_firstmirnaLastnuc+3),"color"]!="Black" | foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black")) & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3) {#
                               #if hanging 3 and few mismatches
                                print("WEAK")
-                              overhang2_animal<-rbind(overhang2_animal, c("Weak 3p Dicer cleavage", perfectmatch_animal*0.5) )
-                              overhang2_plant<-rbind(overhang2_plant, c("Weak 3p cleavage", perfectmatch_plant*0.5))
+                              overhang2_animal<-rbind(overhang2_animal, c("Suspicious loop (Dicer) cleavage", suspicious_animal) )
+                              overhang2_plant<-rbind(overhang2_plant, c("Suspicious loop cleavage", suspicious_plant))
                              }else{
                                print("Bad Dicer 4")
-                               overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 4", 0) )
-                               overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage 4" , 0))
+                               overhang2_animal<-rbind(overhang2_animal, c("Bad loop (Dicer) cleavage", 0) )
+                               overhang2_plant<-rbind(overhang2_plant, c("Bad loop cleavage" , 0))
                              }
                     }else{
                       print("Bad Dicer 5")
@@ -561,19 +626,19 @@ print(firstMIRoverlap)
                     overhang2_plant<-rbind(overhang2_plant, c("Uncommon cleavage" , 0))
                 }else if( foldingtable_2[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
                   print("Acceptable Dicer Loop 1b")
-                  overhang2_animal<-rbind(overhang2_animal, c("Acceptable Loop cleavage (Dicer) cleavage", perfectmatch_animal*0.9) )
-                  overhang2_plant<-rbind(overhang2_plant, c("Acceptable Loop cleavage", perfectmatch_plant*0.9))
+                  overhang2_animal<-rbind(overhang2_animal, c("Acceptable loop (Dicer) cleavage", acceptable_animal) )
+                  overhang2_plant<-rbind(overhang2_plant, c("Acceptable loop cleavage", acceptable_plant))
 
                 }else{
                   print("Bad Dicer 1b")
-                  overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage", 0) )
-                  overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage" , 0))
+                  overhang2_animal<-rbind(overhang2_animal, c("Bad loop (Dicer) cleavage", 0) )
+                  overhang2_plant<-rbind(overhang2_plant, c("Bad loop cleavage" , 0))
                 }
 
               }else{ #complement is same color super bad
                 print("Bad Dicer 3")
-                overhang2_animal<-rbind(overhang2_animal, c("Bad Dicer cleavage 3", 0) )
-                overhang2_plant<-rbind(overhang2_plant, c("Bad Dicer cleavage 3" , 0))}
+                overhang2_animal<-rbind(overhang2_animal, c("Bad loop (Dicer) cleavage", 0) )
+                overhang2_plant<-rbind(overhang2_plant, c("Bad loop cleavage" , 0))}
 
           }
 }else{
@@ -731,27 +796,41 @@ observeEvent(input$ButtonExp, {
 
 
   for (rows in 1:nrow(counts_Table)) {
-    if(counts_Table$Mature[rows] >5 ) { # more X reads matuer +1.5 points
-      Score_expression_animal[rows] =  Score_expression_animal[rows]+3
-      Score_expression_plant[rows] =  Score_expression_plant[rows]+4.25
+    # Expression mature points
+    if(counts_Table$Mature[rows] > ExpLevel1 & counts_Table$Mature[rows] < ExpLevel2 ) { # more X reads matuer +1.5 points
+      Score_expression_animal[rows] =  Score_expression_animal[rows]+ExpLevel1_pointsAnimal
+      Score_expression_plant[rows] =  Score_expression_plant[rows]+ExpLevel1_pointsPlant
 
     }
-    if(counts_Table$Star[ rows]  >5 ) {
-      Score_expression_animal[rows] = Score_expression_animal[rows]+3 # more X reads matuer +1.5 points
-      Score_expression_plant[rows] = Score_expression_plant[rows]+4.25
+    if(counts_Table$Mature[rows] > ExpLevel2 & counts_Table$Mature[rows] < ExpLevel3 ) { # more X reads matuer +1.5 points
+      Score_expression_animal[rows] =  Score_expression_animal[rows]+ExpLevel2_pointsAnimal
+      Score_expression_plant[rows] =  Score_expression_plant[rows]+ExpLevel2_pointsPlant
+
+    }
+    if(counts_Table$Mature[rows] > ExpLevel3) { # more X reads matuer +1.5 points
+      Score_expression_animal[rows] =  Score_expression_animal[rows]+ExpLevel3_pointsAnimal
+      Score_expression_plant[rows] =  Score_expression_plant[rows]+ExpLevel3_pointsPlant
+
+    }
+    #expression star points
+    if(counts_Table$Star[ rows]  > ExpLevel1 & counts_Table$Star[ rows]  < ExpLevel2) {
+      Score_expression_animal[rows] = Score_expression_animal[rows]+ExpLevel1_pointsAnimal
+      Score_expression_plant[rows] = Score_expression_plant[rows]+ExpLevel1_pointsPlant
+    }
+    if(counts_Table$Star[ rows]  > ExpLevel2 & counts_Table$Star[ rows]  < ExpLevel3) {
+      Score_expression_animal[rows] = Score_expression_animal[rows]+ExpLevel2_pointsAnimal
+      Score_expression_plant[rows] = Score_expression_plant[rows]+ExpLevel2_pointsPlant
+    }
+    if(counts_Table$Star[ rows]  > ExpLevel3) {
+      Score_expression_animal[rows] = Score_expression_animal[rows]+ExpLevel3_pointsAnimal
+      Score_expression_plant[rows] = Score_expression_plant[rows]+ExpLevel3_pointsPlant
     }
     ####### if reads precursor - reads star - reads mature is still high, more than the 10% of the mature+star, (has lots of reads on the loop!) -->  penalty!
-    if(  (counts_Table$Precursor[rows] - counts_Table$Mature[rows] - counts_Table$Star[rows])  > (counts_Table$Mature[rows]+counts_Table$Star[rows])*0.8  ) {
-      Score_expression_animal[rows] = Score_expression_animal[rows]-5 # more X reads matuer +1.5 points
-      Score_expression_plant[rows] = Score_expression_plant[rows]-9
+    if(  (counts_Table$Precursor[rows] - counts_Table$Mature[rows] - counts_Table$Star[rows])  > (counts_Table$Mature[rows]+counts_Table$Star[rows])*loopreadthreshold  ) {
+      Score_expression_animal[rows] = Score_expression_animal[rows]-penatlytoomanyreadsloopAnimal # more X reads matuer +1.5 points
+      Score_expression_plant[rows] = Score_expression_plant[rows]-penatlytoomanyreadsloopPlant
 
-      print("Super penalty")
-      print(counts_Table[rows,] )
-    }else if((counts_Table$Precursor[rows] - counts_Table$Mature[rows] - counts_Table$Star[rows])  > (counts_Table$Mature[rows]+counts_Table$Star[rows])*0.1){
-      Score_expression_animal[rows] = Score_expression_animal[rows]-5 # more X reads matuer +1.5 points
-      Score_expression_plant[rows] = Score_expression_plant[rows]-8
-
-      print("penalty")
+      print("Penalty Loop")
       print(counts_Table[rows,] )
     }
   }
