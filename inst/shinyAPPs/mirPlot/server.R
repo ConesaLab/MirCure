@@ -45,7 +45,7 @@ penalty_length<<-(-2) # penalty applied for  3p and 5p if <18 or >23
 
 ## Expression thresholds (applied to each arm)
 #more reads than ExpLevel1
-ExpLevel1_animal<<- 5 #minim reads
+ExpLevel1<<- 5 #minim reads
 ExpLevel1_pointsAnimal<<-3
 ExpLevel1_pointsPlant<<-5
 
@@ -68,35 +68,36 @@ penatlytoomanyreadsloopPlant<<-(-5)
 loopreadthreshold<<-0.8  #if loop contains more than X% of the pre-miRNA reads
 penatlytoomanyreadsloopAnimal<<-(-5)
 penatlytoomanyreadsloopPlant<<-(-5)
+### Conservation scores (important for Plants!)
 
-###comservation score
 #### >20 miRNAs in mirbase identical
-conservation_20id_Animal<<-10
-conservation_20id_Plant<<-20
+Score_conservation_20id_Animal<<-10
+Score_conservation_20id_Plant<<-20
 
 #### 6-20 miRNAs identicals, + similar (same seed) >20
-conservation_6_20id20_Animal<<-10
-conservation_6_20id20_Plant<<-20
+Score_conservation_6_20id20_Animal<<-10
+Score_conservation_6_20id20_Plant<<-20
 
 #### 2-5 miRNAs identicals, + similar (same seed) >20
-conservation_2_5id20_Animal<<-10
-conservation_2_5id20_Plant<<-20
+Score_conservation_2_5id20_Animal<<-10
+Score_conservation_2_5id20_Plant<<-20
 
 #### 6-20 miRNAs identicals, + similar (same seed) <20
-conservation_6_20id_Animal<<-10
-conservation_6_20id_Plant<<-20
+Score_conservation_6_20id_Animal<<-10
+Score_conservation_6_20id_Plant<<-20
 
 #### 2-5 miRNAs identicals, + similar (same seed) <20
-conservation_2_5id_Animal<<-10
-conservation_2_5id_Plant<<-20
+Score_conservation_2_5id_Animal<<-10
+Score_conservation_2_5id_Plant<<-20
 
 #### 0 identicals, + similar (same seed) >20
-conservation_0id20_Animal<<-10
-conservation_0id20_Plant<<-20
+Score_conservation_0id20_Animal<<-10
+Score_conservation_0id20_Plant<<-20
+
 
 #### 0 identicals, + similar (same seed) <20
-conservation_0id_Animal<<-10
-conservation_0id_Plant<<-20
+Score_conservation_0id_Animal<<-10
+Score_conservation_0id_Plant<<-20
 
 
 #### Final Score Formula
@@ -144,7 +145,7 @@ server <- function(input, output, session) {
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
        #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
        precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
-       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNApre_from361.gff3")
+       precsdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNApre_short.gff3")
 
        return(head(precsdf))
   })
@@ -156,7 +157,7 @@ server <- function(input, output, session) {
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_matures.gff3")
     matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
-    matdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA5P_from361.gff3")
+    matdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA5P_short.gff3")
 
     return(head(matdf))
    })
@@ -168,7 +169,7 @@ server <- function(input, output, session) {
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
         #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
         stardf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/starGFF3.gff3")
-        stardf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA3P_from361.gff3")
+        stardf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA3P_short.gff3")
         return(head(stardf))
  })
 
@@ -1197,9 +1198,10 @@ observeEvent(input$ButtonIntegrate, {
     errorClass =  showNotification("Missing succesful Step 4", type= "error")
   )
 
-CalculateScore<<-function(expression, overhang,homology,penaltylen){
-  finalscore<<-expression+overhang+homology+penaltylen
-}
+  CalculateScore<<-function(expression, overhang,homology,penaltylen){
+    finalscore<<-expression+overhang+homology+penaltylen
+    return(finalscore)
+  }
 
   if(specie=="Animal"){
     Score<-Score_expression_animal+overhangs_score_animal+Score_homology_animal+penaltyscorelength_animal
