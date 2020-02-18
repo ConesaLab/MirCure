@@ -23,6 +23,26 @@ memory.size(max=TRUE)
 options(shiny.maxRequestSize = 10000*1024^2)
 
 
+##############################################
+############ Score definition ################
+##############################################
+## Overhang scores values (applys to bot, priRNA and loop cleavage)
+perfectmatch_animal<<-5
+acceptable_animal<<-3
+suspicious_animal<<-1.5
+
+perfectmatch_plant<<-2.5
+acceptable_plant<<-2
+suspicious_plant<<-1.5
+
+# bad =0
+
+## miRNA arm lengths
+penalty_length<<-(-2) # penalty applied for  3p and 5p if <18 or >23
+
+
+###########################################
+
 
 server <- function(input, output, session) {
   #######
@@ -234,13 +254,13 @@ observeEvent(input$ButtonSeqs, {
   showNotification("Done. Check Seq. Info Tab", type= "message")
 
 
-  ########### penalty length
-  penaltyscore1<-ifelse(width(matseqs)>23, -2, 0 )
-  penaltyscore2<-ifelse(width(starseqs)>23, -2, 0 )
+    ########### penalty nature and star lengths
+  penaltyscore1<-ifelse(width(matseqs)  < 18 & width(matseqs)>23, penalty_length, 0 )
+  penaltyscore2<-ifelse(width(starseqs) < 18 & width(starseqs)>23, penalty_length, 0 )
   penaltyscorelength_animal<<-penaltyscore2+penaltyscore1
 
-  penaltyscore3<-ifelse(width(matseqs)>23, -2, 0 )
-  penaltyscore4<-ifelse(width(starseqs)>23, -2, 0 )
+  penaltyscore3<-ifelse(width(matseqs)  < 18 & width(matseqs)>23, penalty_length, 0 )
+  penaltyscore4<-ifelse(width(starseqs) < 18 & width(starseqs)>23, penalty_length, 0 )
   penaltyscorelength_plant<<-penaltyscore3+penaltyscore4
   ########
 
@@ -267,16 +287,9 @@ observeEvent(input$ButtonFold, {
     overhang2_animal<-NULL
     overhang_plant<-NULL
     overhang2_plant<-NULL
-    perfectmatch_animal<-NULL
-    semigood_animal<-NULL
-    perfectmatch_plant<-NULL
-    semigood_plant<-NULL
 
-    ## sdefine cores animal / plant
-      perfectmatch_animal<-5
-      semigood_animal<-3
-      perfectmatch_plant<-2.5
-      semigood_plant<-2
+
+
 
 
  n<-  nrow(mirnadf)
