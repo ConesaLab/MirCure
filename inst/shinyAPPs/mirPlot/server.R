@@ -100,9 +100,12 @@ conservation_0id_Plant<<-20
 
 
 #### Final Score Formula
-
+CalculateScore<<-function(expression, overhang,homology,penaltylen){
+  finalscore<<-expression+overhang+homology+penaltylen
+  return(finalscore)
+}
 #### Threshold
-
+scorethreshold<<-14
 
 
 
@@ -1194,7 +1197,9 @@ observeEvent(input$ButtonIntegrate, {
     errorClass =  showNotification("Missing succesful Step 4", type= "error")
   )
 
-
+CalculateScore<<-function(expression, overhang,homology,penaltylen){
+  finalscore<<-expression+overhang+homology+penaltylen
+}
 
   if(specie=="Animal"){
     Score<-Score_expression_animal+overhangs_score_animal+Score_homology_animal+penaltyscorelength_animal
