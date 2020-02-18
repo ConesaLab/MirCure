@@ -1038,18 +1038,18 @@ observeEvent(input$Homology, {
 
     numberofalignments<-20
 
-    if (length(toalignwhole)>1 ){ # if some are dientical hits
+    if (length(toalignwhole)>1 ){ # if some are >1 identical hits
       if (length(toalignwhole)<numberofalignments &  (length(toalignseed)+length(toalignwhole))>numberofalignments  ){ # if identical are less than numberofalignments but plus same seed more than numberofalignments
           toalign<-c(toalign,toalignwhole )####
           toalign<-c(toalign, sample(toalignseed,numberofalignments-length(toalignwhole)) )#### we ad same seed until numberofalignments
 
-          if(length(toalignwhole)>6){## if there are between 5 and 20 identicals  (+ >20 similar)
-            score2_animal<<-c(score2_animal,3.5)
-            score2_plant<<-c(score2_plant,6)
+          if(length(toalignwhole)>5){## if there are between 6 and 20 identicals  (+ >20 similar)
+            score2_animal<<-c(score2_animal,Score_conservation_6_20id20_Animal)
+            score2_plant<<-c(score2_plant,Score_conservation_6_20id20_Plant)
             conservationtype<<-c(conservationtype,"strong 6")
           }else{
-            score2_animal<<-c(score2_animal,3)###### if there are between 2-4 identicals (+ >20 similar)
-            score2_plant<<-c(score2_plant,4)
+            score2_animal<<-c(score2_animal,Score_conservation_2_5id_Animal)###### if there are between 2-5 identicals (+ >20 similar)
+            score2_plant<<-c(score2_plant,Score_conservation_2_5id_Plant)
             conservationtype<<-c(conservationtype,"strong 4")
 
           }
@@ -1060,14 +1060,14 @@ observeEvent(input$Homology, {
         toalign<-c(toalign, toalignseed)
 
 
-         if(length(toalignwhole)>5){## if there are between 5 and 20 identicals  (+ <20 similar)
-          score2_animal<<-c(score2_animal,3.4)
-          score2_plant<<-c(score2_plant,5.8)
+         if(length(toalignwhole)>5){## if there are between 6 and 20 identicals  (+ <20 similar)
+          score2_animal<<-c(score2_animal, Score_conservation_6_20id_Animal)
+          score2_plant<<-c(score2_plant, Score_conservation_6_20id_Plant)
           conservationtype<<-c(conservationtype,"strong 5.8")
 
         }else{
-          score2_animal<<-c(score2_animal,2.78)###### if there are between 2-4 identicals (+ <20 similar)
-          score2_plant<<-c(score2_plant,4.8)
+          score2_animal<<-c(score2_animal,Score_conservation_2_5id_Animal)###### if there are between 2-4 identicals (+ <20 similar)
+          score2_plant<<-c(score2_plant,Score_conservation_2_5id_Plant)
           conservationtype<<-c(conservationtype,"medium 4.8")
 
         }
@@ -1075,8 +1075,8 @@ observeEvent(input$Homology, {
       }
       if(length(toalignwhole)>numberofalignments){#### if more than numberofalignments identicals, we select ALL identical
         toalign<-c(toalign,toalignwhole)
-        score2_animal<<-c(score2_animal,4)######
-        score2_plant<<-c(score2_plant,6.5)######
+        score2_animal<<-c(score2_animal,Score_conservation_20id_Animal)######
+        score2_plant<<-c(score2_plant,Score_conservation_20id_Plant)######
         conservationtype<<-c(conservationtype,"very strong 6.5")
 
 
@@ -1085,16 +1085,16 @@ observeEvent(input$Homology, {
     }else if(length(toalignseed)>1){#### if no identicals but some with same seed
         if (length(toalignseed)<numberofalignments  ){#if less than numberofalignments we use all
           toalign<-c(toalign,toalignseed)
-          score2_animal<<-c(score2_animal,2)######
-          score2_plant<<-c(score2_plant, 0.5)######
+          score2_animal<<-c(score2_animal,Score_conservation_0id_Animal)######
+          score2_plant<<-c(score2_plant, Score_conservation_0id_Plant)######
           conservationtype<<-c(conservationtype,"low 2")
 
 
         }
-        if (length(toalignseed)>numberofalignments  ){#if more same seed than numberofalignments, we select ALL
+        if (length(toalignseed)>numberofalignments  ){#if more same seed than numberofalignments(20), we select ALL
           toalign<- c(toalign,toalignseed)###
-          score2_animal<<-c(score2_animal,2.5)######
-          score2_plant<<-c(score2_plant,0.8)######
+          score2_animal<<-c(score2_animal,Score_conservation_0id20_Animal)######
+          score2_plant<<-c(score2_plant,Score_conservation_0id20_Plant)######
           conservationtype<<-c(conservationtype,"low 0.8")
 
 
