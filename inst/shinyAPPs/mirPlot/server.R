@@ -178,10 +178,14 @@ server <- function(input, output, session) {
     observeEvent(input$matureorarm, {
       if(input$matureorarm == "maturestar"){
         maturestar=TRUE
+        color_arm1<<-"red"
+        color_arm2<<-"blue"
         print("maturestar")}
 
       if(input$matureorarm == "arm5p3p"){
         maturestar=FALSE
+        color_arm1<<-"darkorange3"
+        color_arm2<<-"darkgreen"
         print("arm5p3p")}
     })
 
@@ -411,7 +415,7 @@ observeEvent(input$ButtonFold, {
 
         overlap=maturecord1[2]-starcord1[1]+1
         if(overlap<0) {#if mature and star don't overlap (as it should)
-          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep("Blue",length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep(color_arm1,length(seq(maturecord1[1], maturecord1[2]))),rep("Black",length(seq(maturecord1[2]+1, starcord1[1]-1))),rep(color_arm2,length(seq(starcord1[1], starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -420,7 +424,7 @@ observeEvent(input$ButtonFold, {
           overlaFLAG=TRUE
           if (overlap>0){# if there is overlap
 
-          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlap))),rep("Orange",length(seq(maturecord1[2]-overlap+1, starcord1[1]+overlap-1))),rep("Blue",length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+          colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep(color_arm1,length(seq(maturecord1[1], maturecord1[2]-overlap))),rep("Orange",length(seq(maturecord1[2]-overlap+1, starcord1[1]+overlap-1))),rep(color_arm2,length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -428,7 +432,7 @@ observeEvent(input$ButtonFold, {
           }
           if (overlap==0){# if they dont overlap, but there is no loop
 
-            colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep("Red",length(seq(maturecord1[1], maturecord1[2]-overlap))),rep("Blue",length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
+            colorvector<-c(rep("Black", length(seq(1,maturecord1[1]-1)) ), rep(color_arm1,length(seq(maturecord1[1], maturecord1[2]-overlap))),rep(color_arm2,length(seq(starcord1[1]+overlap, starcord1[2]))), rep("Black",length(seq(starcord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -445,7 +449,7 @@ observeEvent(input$ButtonFold, {
 
         if(overlap<0){ # if no overlap
 
-          colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+          colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep(color_arm2,length(seq(starcord1[1], starcord1[2]))),rep("Black",length(seq(starcord1[2]+1, maturecord1[1]-1))),rep(color_arm1,length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
           foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
           foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -454,14 +458,14 @@ observeEvent(input$ButtonFold, {
         }else{# If mature and star overlap (they shouldn't!) don't crash do :
 
           if (overlap>0){
-            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]-overlap))),rep("Orange",length(seq(starcord1[2]+overlap+1, maturecord1[1]-overlap-1))),rep("Red",length(seq(maturecord1[1]-overlap, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep(color_arm2,length(seq(starcord1[1], starcord1[2]-overlap))),rep("Orange",length(seq(starcord1[2]+overlap+1, maturecord1[1]-overlap-1))),rep(color_arm1,length(seq(maturecord1[1]-overlap, maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
            foldingtable[foldingtable$dots==")",]$"closeprent"<-seq(nrow( foldingtable[foldingtable$dots==")",]) , 1)
           }
           if (overlap==0){# if overlap is zero but also no gap
-            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep("Blue",length(seq(starcord1[1], starcord1[2]))),rep("Red",length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
+            colorvector<-c(rep("Black", length(seq(1,starcord1[1]-1)) ), rep(color_arm2,length(seq(starcord1[1], starcord1[2]))),rep(color_arm1,length(seq(maturecord1[1], maturecord1[2]))), rep("Black",length(seq(maturecord1[2], nchar(folded[[1]][1])-1))) )
             foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
 
             foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -665,7 +669,7 @@ print(firstMIRoverlap)
           jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
             par(mar=c(0.1,0.1,0,0.1))
             RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-              seqcols=c(2,5),labTF=FALSE,
+              seqcols=c(color_arm1,color_arm2),labTF=FALSE,
               pointSize = 1, lineWd = 1, nt=T,
               dp=1, tsize=0.5)
             dev.off()
@@ -673,7 +677,7 @@ print(firstMIRoverlap)
             jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
               par(mar=c(0.1,0.1,0,0.1))
               RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-                seqcols=c(2,5),labTF=FALSE,
+                seqcols=c(color_arm1,color_arm2),labTF=FALSE,
                 pointSize = 2, lineWd = 1, nt=T,
                 dp=1, tsize=0.8)
                 dev.off()
@@ -681,7 +685,7 @@ print(firstMIRoverlap)
               jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
                 par(mar=c(0.1,0.1,0,0.1))
                 RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-                seqcols=c(2,5),labTF=FALSE,
+                seqcols=c(color_arm1,color_arm2),labTF=FALSE,
                 pointSize = 2.3, lineWd = 1, nt=T,
                 dp=1, tsize=1)
                 dev.off()
@@ -917,7 +921,7 @@ observeEvent(input$ButtonExp, {
 
     png(filename = paste("www/plots/",mirname, ".png",sep=""),   width = 1200, height = 480)
               par(mar=c(2,4.5,2,0))
-              plot<-barplot(toplot, axes=TRUE, ylab="Number of Reads", main=mirname, col=c("blue", "grey"), border=c("blue","grey"),beside=T)
+              plot<-barplot(toplot, axes=TRUE, ylab="Number of Reads", main=mirname, col=c("blue4", "grey"), border=c("blue4","grey"),beside=T)
              # mtext(at = plot, text = seq,col="black", side = 1,  line = 0, cex=1)
 
               stardf_extrabases<-GRanges(stardf)
@@ -929,8 +933,8 @@ observeEvent(input$ButtonExp, {
               matureseq_i=start(matdf_extrabases[i])-start(selectedRange)+1
               matureseq_e=end(matdf_extrabases[i])-start(selectedRange)+1
               mtext(at = plot[1,c(1:matureseq_i,matureseq_e:length(seq))], text =seq[c(1:matureseq_i,matureseq_e:length(seq))] ,col="black", side = 1,  line = 0, cex=1)
-              mtext(at = plot[1,star_i:star_e], text = seq[star_i:star_e],col="blue", side = 1,  line = 0, cex=1)
-              mtext(at = plot[1,matureseq_i:matureseq_e], text = seq[matureseq_i:matureseq_e],col="red", side = 1,  line = 0, cex=1)
+              mtext(at = plot[1,star_i:star_e], text = seq[star_i:star_e],col=color_arm2, side = 1,  line = 0, cex=1, font=( face=2))
+              mtext(at = plot[1,matureseq_i:matureseq_e], text = seq[matureseq_i:matureseq_e],col=color_arm1, side = 1,  line = 0, cex=1, font=( face=2))
         dev.off()
 
         incProgress(1/n, detail = paste("Plot", i, "of", n))
@@ -1479,14 +1483,14 @@ observeEvent(input$ButtonIntegrate, {
   colnames(Scoresboxplotdata)<-colnames(Correct)
 
   output$ScoreBoxplots1<- renderPlot({ggplot(Scoresboxplotdata, aes(x = class , y = Score)) +
-    stat_summary(fun.y=mean, colour="red", geom="point") +
+    stat_summary(fun.y=mean, colour=color_arm1, geom="point") +
     geom_boxplot (aes(fill=Score), alpha=.5, width=1, position = position_dodge(width = 1),  outlier.colour = "dark gray", outlier.size = 1)+
     ggtitle("Scores per class") + theme(legend.position="none",axis.text=element_text(size=13), axis.title=element_text(size=15))})
 
   output$ScoreBoxplots2<- renderPlot({
 
     ggplot(Scoresboxplotdata, aes(x = class , y = log(Score))) +
-      stat_summary(fun.y=mean, colour="red", geom="point") +
+      stat_summary(fun.y=mean, colour=color_arm1, geom="point") +
       geom_boxplot (aes(fill=Score), alpha=.5, width=1, position = position_dodge(width = 1),  outlier.colour = "dark gray", outlier.size = 1)+
       ggtitle("Log(Scores per class)") + theme(legend.position="none",axis.text=element_text(size=13), axis.title=element_text(size=15))
     })
