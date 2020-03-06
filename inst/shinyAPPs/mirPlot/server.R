@@ -721,6 +721,46 @@ print(firstMIRoverlap)
   print(  "values$successStep2==TRUE")
   showNotification("Done. Check RNA folding Tab", type= "message")
 
+
+
+################ Count mismatches
+## it assumes that iverhang is correct (otherwise will be filtered by the overhang fucntion)
+  Arm1struct<-foldingtable_2[foldingtable_2$color==color_arm1,  ]
+  Arm1struct_min2<-Arm1struct[1:(nrow(Arm1struct)-2),] ## skip last 2nts that are should be hanging
+  MismatchesArm1<-count(Arm1struct_min2$dots==".")
+  MismatchesArm1
+
+  BulgesDFArm1<-data.frame(unclass(rle(as.character(Arm1struct_min2$dots))))
+  BulgesDFArm1[BulgesDFArm1$values==".",]
+
+  Arm2struct<-foldingtable_2[foldingtable_2$color==color_arm2,  ]
+  Arm2struct_min2<-Arm2struct[3:(nrow(Arm2struct)),] ## skip first 2nts that are should be hanging
+  MismatchesArm2<-count(Arm2struct_min2$dots==".")
+  MismatchesArm2
+  BulgesDFArm2<-as.data.frame(unclass(rle(as.character(Arm2struct_min2$dots))))
+  BulgesDFArm2[BulgesDFArm2$values==".",]
+  ## scores mismatches
+
+  if (specie=="Animal"){
+    if (MismatchesArm1>6 | MismatchesArm2 >6){# currently not used
+      mismatch<-"WRONG"
+    }else{
+      mismatch<-"GOOD"
+    }
+    print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch))
+  }else{
+    if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
+      mismatch<-"WRONG"
+    }else if( max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths) >3 | max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths) >3){
+      mismatch<-"WRONG"
+      }else{
+        mismatch<-"GOOD"
+      }
+    print(paste("Mismatches","mismatches=",MismatchesArm1,MismatchesArm2,"Bulges",max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths),max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths),mismatch))
+  }
+
+  mismatchesFilter<<-mirnadf_mismatch
+
   })## clsose button fold
 
 ##############################################
