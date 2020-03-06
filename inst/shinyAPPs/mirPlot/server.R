@@ -360,7 +360,7 @@ observeEvent(input$ButtonFold, {
     overhang2_animal<-NULL
     overhang_plant<-NULL
     overhang2_plant<-NULL
-
+    mirnadf_mismatch<-NULL
 
 
 
@@ -691,6 +691,47 @@ print(firstMIRoverlap)
                 dev.off()
           }
 
+
+      ################ Count mismatches
+      ## it assumes that iverhang is correct (otherwise will be filtered by the overhang fucntion)
+      Arm1struct<-foldingtable_2[foldingtable_2$color==color_arm1,  ]
+      Arm1struct_min2<-Arm1struct[1:(nrow(Arm1struct)-2),] ## skip last 2nts that are should be hanging
+      MismatchesArm1<-count(Arm1struct_min2$dots==".")
+      MismatchesArm1
+
+      BulgesDFArm1<-data.frame(unclass(rle(as.character(Arm1struct_min2$dots))))
+      BulgesDFArm1[BulgesDFArm1$values==".",]
+
+      Arm2struct<-foldingtable_2[foldingtable_2$color==color_arm2,  ]
+      Arm2struct_min2<-Arm2struct[3:(nrow(Arm2struct)),] ## skip first 2nts that are should be hanging
+      MismatchesArm2<-count(Arm2struct_min2$dots==".")
+      MismatchesArm2
+      BulgesDFArm2<-as.data.frame(unclass(rle(as.character(Arm2struct_min2$dots))))
+      BulgesDFArm2[BulgesDFArm2$values==".",]
+      ## scores mismatches
+
+      if (specie=="Animal"){
+        if (MismatchesArm1>6 | MismatchesArm2 >6){# currently not used
+          mismatch_category<-"WRONG"
+        }else{
+          mismatch_category<-"GOOD"
+        }
+        print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch_category))
+      }else{
+        if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
+          mismatch_category<-"WRONG"
+        }else if( max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths) >3 | max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths) >3){
+          mismatch_category<-"WRONG"
+        }else{
+          mismatch_category<-"GOOD"
+        }
+        mirnadf_mismatch<-rbind(mirnadf_mismatch, mismatch_category)
+        print(paste("Mismatches","mismatches=",MismatchesArm1,MismatchesArm2,"Bulges",max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths),max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths),mismatch))
+      }
+
+      mismatchesFilter<<-mirnadf_mismatch
+
+
    incProgress(1/n, detail = paste("Prec", i, "of", n))
     }# close loop for each prec
   })# close section folding
@@ -710,7 +751,7 @@ print(firstMIRoverlap)
     overhangs_score_animal<<- as.numeric(overhang_animal[,2])+as.numeric(overhang2_animal[,2] )
   }else{
     print("Making dataframe plant")
-    mirnadf_folding<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_plant[,1],"Loop Cleavage"=overhang2_plant[,1] )
+    mirnadf_foldingc
     output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
     overhangs_score_plant<<- as.numeric(overhang_plant[,2])+as.numeric(overhang2_plant[,2] )
   }
@@ -722,44 +763,6 @@ print(firstMIRoverlap)
   showNotification("Done. Check RNA folding Tab", type= "message")
 
 
-
-################ Count mismatches
-## it assumes that iverhang is correct (otherwise will be filtered by the overhang fucntion)
-  Arm1struct<-foldingtable_2[foldingtable_2$color==color_arm1,  ]
-  Arm1struct_min2<-Arm1struct[1:(nrow(Arm1struct)-2),] ## skip last 2nts that are should be hanging
-  MismatchesArm1<-count(Arm1struct_min2$dots==".")
-  MismatchesArm1
-
-  BulgesDFArm1<-data.frame(unclass(rle(as.character(Arm1struct_min2$dots))))
-  BulgesDFArm1[BulgesDFArm1$values==".",]
-
-  Arm2struct<-foldingtable_2[foldingtable_2$color==color_arm2,  ]
-  Arm2struct_min2<-Arm2struct[3:(nrow(Arm2struct)),] ## skip first 2nts that are should be hanging
-  MismatchesArm2<-count(Arm2struct_min2$dots==".")
-  MismatchesArm2
-  BulgesDFArm2<-as.data.frame(unclass(rle(as.character(Arm2struct_min2$dots))))
-  BulgesDFArm2[BulgesDFArm2$values==".",]
-  ## scores mismatches
-
-  if (specie=="Animal"){
-    if (MismatchesArm1>6 | MismatchesArm2 >6){# currently not used
-      mismatch<-"WRONG"
-    }else{
-      mismatch<-"GOOD"
-    }
-    print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch))
-  }else{
-    if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
-      mismatch<-"WRONG"
-    }else if( max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths) >3 | max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths) >3){
-      mismatch<-"WRONG"
-      }else{
-        mismatch<-"GOOD"
-      }
-    print(paste("Mismatches","mismatches=",MismatchesArm1,MismatchesArm2,"Bulges",max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths),max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths),mismatch))
-  }
-
-  mismatchesFilter<<-mirnadf_mismatch
 
   })## clsose button fold
 
