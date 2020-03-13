@@ -387,6 +387,7 @@ server <- function(input, output, session) {
             maturecord0<-maturecord00[[1]][1]
           }else{# if its 3p the last one
             maturecord0<-maturecord00[[1]][length(maturecord00[[1]])]
+
           }
         }
         maturecord1<-range(maturecord0,maturecord0+nchar(as.character(mirnadf$mature[i]))-1)
@@ -716,6 +717,7 @@ server <- function(input, output, session) {
           }else{
             mismatch_category<- 0
           }
+
           print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch_category))
         }else{
           if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
@@ -753,6 +755,7 @@ server <- function(input, output, session) {
       mirnadf_folding<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_plant[,1],"Loop Cleavage"=overhang2_plant[,1] )
       output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
       overhangs_score_plant<<- as.numeric(overhang_plant[,2])+as.numeric(overhang2_plant[,2] )
+
     }
     
     foldingFigs<<-foldingFigs
