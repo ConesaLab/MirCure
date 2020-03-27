@@ -29,8 +29,8 @@ options(shiny.maxRequestSize = 10000*1024^2)
 ##############################################
 ## Overhang scores values (applys to bot, priRNA and loop cleavage)
 perfectmatch_animal<<-1
-acceptable_animal<<-0.5
-suspicious_animal<<-0
+acceptable_animal<<-0.75
+suspicious_animal<<-0.5
 
 perfectmatch_plant<<-1
 acceptable_plant<<-0
@@ -47,7 +47,7 @@ penalty_length<<-(-2) # penalty applied for  3p and 5p if <18 or >23
 ## Expression thresholds (applied to each arm)
 #more reads than ExpLevel1
 ExpLevel1<<- 5 #minim reads
-ExpLevel1_pointsAnimal<<-1
+ExpLevel1_pointsAnimal<<-1.5
 ExpLevel1_pointsPlant<<-5
 
 #more reads than ExpLevel2
@@ -57,7 +57,7 @@ ExpLevel2_pointsPlant<<-6
 
 #more reads than ExpLevel3
 ExpLevel3<<-100 #minim reads
-ExpLevel3_pointsAnimal<<-1
+ExpLevel3_pointsAnimal<<-2.5
 ExpLevel3_pointsPlant<<-8
 
 #Too many reads in loop has a penalty
@@ -104,7 +104,7 @@ CalculateScore<<-function(expression, overhang,homology,penaltylen){
   return(finalscore)
 }
 #### Threshold
-scorethreshold <<--1.5
+scorethreshold <<- 2.25
 
 folded_globe <<- list()
 
@@ -140,7 +140,7 @@ server <- function(input, output, session) {
     req(input$precs)
     precsdf <- readGFF(input$precs$datapath)
     #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
-    precsdf <<- readGFF("/Users/liutianyuan/Desktop/Threshold_adjust/split\ file/testpre")
+    precsdf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNApre.gff3")
     #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
     #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
     #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNApre_short.gff3")
@@ -153,7 +153,7 @@ server <- function(input, output, session) {
     req(input$mature)
     matdf <- readGFF(input$mature$datapath)
     #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
-    matdf <<- readGFF("/Users/liutianyuan/Desktop/Threshold_adjust/split\ file/test5p")
+    matdf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNA5p.gff3")
     #matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
     #matdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA5P_short.gff3")
     
@@ -166,7 +166,7 @@ server <- function(input, output, session) {
     stardf <- readGFF(input$star$datapath)
     #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
     #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
-    stardf <<- readGFF("/Users/liutianyuan/Desktop/Threshold_adjust/split\ file/test3p")
+    stardf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNA3p.gff3")
     #stardf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA3P_short.gff3")
     return(head(stardf))
   })
@@ -277,7 +277,6 @@ server <- function(input, output, session) {
     matseqs <<- getSeq(genomefasta,GRanges(matdf$seqid,IRanges(start=as.numeric(matdf$start),end=as.numeric(matdf$end)),strand =precsdf$strand ))
     starseqs <<- getSeq(genomefasta,GRanges(stardf$seqid,IRanges(start=as.numeric(stardf$start),end=as.numeric(stardf$end)),strand =precsdf$strand ) )
     
-    
     #extrabases<<-15
     
     extrabases<<-input$extrabases
@@ -308,11 +307,11 @@ server <- function(input, output, session) {
     
     #output$mirnaSeqs <-renderTable({
     #mirnadf<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),star=as.character(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
-    
+    colnames(precsdf) = c("seqid" ,"source", "type",   "start",  "end",    "score"  ,"strand", "phase"  ,"ID" )
     mirnadf<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),star=as.character(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
     mirnadf_toshow1<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),'length mature'=width(matseqs),star=as.character(starseqs),'length mature'=width(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
 
-    
+
     if (input$matureorarm == "maturestar"){
       output$mirnaSeqs <- DT::renderDataTable({ mirnadf_toshow1}  )
     }else{
@@ -323,18 +322,11 @@ server <- function(input, output, session) {
       
     }
     
-    
     values$successStep1<-TRUE
     showNotification("Done. Check Seq. Info Tab", type= "message")
     
     ########### penalty nature and star lengths
-    penaltyscore1<-ifelse(width(matseqs)  < 18 | width(matseqs)>23, penalty_length, 0 )
-    penaltyscore2<-ifelse(width(starseqs) < 18 | width(starseqs)>23, penalty_length, 0 )
-    penaltyscorelength_animal<<-penaltyscore2+penaltyscore1
-    
-    penaltyscore3<-ifelse(width(matseqs)  < 18 | width(matseqs)>23, penalty_length, 0 )
-    penaltyscore4<-ifelse(width(starseqs) < 18 | width(starseqs)>23, penalty_length, 0 )
-    penaltyscorelength_plant<<-penaltyscore3+penaltyscore4
+
     ########
     
     
@@ -377,14 +369,15 @@ server <- function(input, output, session) {
     showNotification("Checking Expression", type= "message")
     withProgress(message = 'Loading bam...(be patient)', value = 0, {
       
-      n <- 3
+      n <- 4
       coverage_p<<-list()
       coverage_n<<-list()
       
       
       incProgress(1/n, detail = "Loading bam")
       
-      #alignment <<- readGAlignments("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/bamfiles/test.bam")
+      #alignment <<- readGAlignments("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/bamfiles/all10_sort.bam")
+      #alignment <<-  readGAlignments("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/bamfiles/test.bam")
       
       alignment <<- readGAlignments(values$bamfilepath)
       
@@ -414,9 +407,9 @@ server <- function(input, output, session) {
       adjustStarSequence <<- c()
       n <- 0
       q <- nrow(mirnadf)
-  
+
       for(i in 1: nrow(mirnadf) ){
-        
+        incProgress(1/q, detail = paste("Adjusting the annotation:precursor", i, "of", q))
         
         ##convert in GRanges
         mirname=mirnadf$ID[i]
@@ -448,7 +441,7 @@ server <- function(input, output, session) {
         
         
         
-        incProgress(1/q, detail = paste("Adjusting the annotation:precursor", i, "of", q))
+        #
         
         ##############correct the annotation based on the expression ###################
         
@@ -525,7 +518,7 @@ server <- function(input, output, session) {
             adjustStarSequence[i] <- as.character(mirnadf$star[i])
           } else {
             adjustStarPosition[[i]] <- c(star_i, star_e) # get the position (star/end) for check structure
-            adjustMaturePosition[[i]] <- c (matureseq_i, matureseq_e)
+            adjustMaturePosition[[i]] <- c(matureseq_i, matureseq_e)
             adjustMatureSequence[i] <- as.character(mirnadf$mature[i])
             adjustStarSequence[i] <- as.character(mirnadf$star[i])
           }
@@ -576,10 +569,12 @@ server <- function(input, output, session) {
       finalStarPosition <- list()
       finalMaturePosition <- list()
       q <- nrow(mirnadf)
+      
 
       
 
       for (i in 1:nrow(mirnadf)){
+       
         incProgress(1/q, detail = paste0("May take a long time ... ", i, " of ", q))
         
         #if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
@@ -618,20 +613,27 @@ server <- function(input, output, session) {
         }
         starcord1<-range(starcord0,starcord0+nchar(as.character(mirnadf$star[i]))-1)
         maturecord1<-range(maturecord0,maturecord0+nchar(as.character(mirnadf$mature[i]))-1)
-        if(precsdf_1$strand[i] == "+") {
+        
+        ## we would get different position if we start from +/-
+        #if(precsdf_1$strand[i] == "+") {
           maturecord1_adjust <- adjustMaturePosition[[i]]
           starcord1_adjust <- adjustStarPosition[[i]]
-        } else {
-          MatureEnd <- str_length(mirnadf$precseqs_extended[i]) - adjustMaturePosition[[i]][1] + 1
-          MatureStart <- str_length(mirnadf$precseqs_extended[i]) - adjustMaturePosition[[i]][2] + 1
-          maturecord1_adjust <- c(MatureStart, MatureEnd)
-          adjustMaturePosition[[i]] <- c(MatureStart, MatureEnd)
+        #} else {
+        #  MatureEnd <- str_length(mirnadf$precseqs_extended[i]) - adjustMaturePosition[[i]][1] + 1
+        #  MatureStart <- str_length(mirnadf$precseqs_extended[i]) - adjustMaturePosition[[i]][2] + 1
+        #  maturecord1_adjust <- c(MatureStart, MatureEnd)
+        #  adjustMaturePosition[[i]] <- c(MatureStart, MatureEnd)
           
-          starEnd <- str_length(mirnadf$precseqs_extended[i]) - adjustStarPosition[[i]][1] + 1
-          starStart <- str_length(mirnadf$precseqs_extended[i]) - adjustStarPosition[[i]][2] + 1
-          starcord1_adjust <- c(starStart, starEnd)
-          adjustStarPosition[[i]] <- c(starStart, starEnd)
-        }
+        #  starEnd <- str_length(mirnadf$precseqs_extended[i]) - adjustStarPosition[[i]][1] + 1
+        #  starStart <- str_length(mirnadf$precseqs_extended[i]) - adjustStarPosition[[i]][2] + 1
+        #  starcord1_adjust <- c(starStart, starEnd)
+        #  adjustStarPosition[[i]] <- c(starStart, starEnd)
+        #}
+          if(maturecord1_adjust[1] > starcord1_adjust[1]) {
+            temp <- maturecord1_adjust
+            maturecord1_adjust <- starcord1_adjust
+            starcord1_adjust <- temp
+          }
         
         if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Nt
           ##if 5P mature
@@ -902,8 +904,7 @@ server <- function(input, output, session) {
             }else{# If mature and star overlap (they shouldn't!) don't crash do :
               overlaFLAG=TRUE
               if (overlap>0){# if there is overlap
-                
-                colorvector<-c(rep("Black", length(seq(1,maturecord1_adjust[1]-1)) ), rep(color_arm1,length(seq(maturecord1_adjust[1], maturecord1_adjust[2]-overlap))),rep("Orange",length(seq(maturecord1_adjust[2]-overlap+1, starcord1_adjust[1]+overlap-1))),rep(color_arm2,length(seq(starcord1_adjust[1]+overlap, starcord1_adjust[2]))), rep("Black",length(seq(starcord1_adjust[2], nchar(folded[[1]][1])-1))) )
+                colorvector<-c(rep("Black", length(seq(1,maturecord1_adjust[1]-1)) ), rep(color_arm2,length(seq(maturecord1_adjust[1], maturecord1_adjust[2]-overlap))),rep("Orange",length(seq(maturecord1_adjust[2]-overlap+1, starcord1_adjust[1]+overlap-1))),rep(color_arm2,length(seq(starcord1_adjust[1]+overlap, starcord1_adjust[2]))), rep("Black",length(seq(starcord1_adjust[2], nchar(folded[[1]][1])-1))) )
                 foldingtable<- data.frame("color"=colorvector, "dots"=str_split(folded[[1]][2], "")[[1]], "seq"=str_split(folded[[1]][1], "")[[1]] ,"openprent"=NA ,"closeprent"=NA)
                 
                 foldingtable[foldingtable$dots=="(",]$"openprent"<-seq(1, nrow( foldingtable[foldingtable$dots=="(",]) )
@@ -963,20 +964,20 @@ server <- function(input, output, session) {
           DroshaCut5<-foldingtable[(firstmirnanuc5p-2):(firstmirnanuc5p+1),]
           
           ### Check 1st cleaveage by Drosha
-          foldingtable_2<-foldingtable
-          foldingtable_2$dotnumeric<-0
-          foldingtable_2[foldingtable_2$dots=="(",]$dotnumeric<-(-1)
-          foldingtable_2[foldingtable_2$dots==")",]$dotnumeric<-1
+          foldingtable_2_adjust<-foldingtable
+          foldingtable_2_adjust$dotnumeric<-0
+          foldingtable_2_adjust[foldingtable_2_adjust$dots=="(",]$dotnumeric<-(-1)
+          foldingtable_2_adjust[foldingtable_2_adjust$dots==")",]$dotnumeric<-1
           
-          foldingtable_2[firstmirnanuc5p,]
-          foldingtable_2
+          foldingtable_2_adjust[firstmirnanuc5p,]
+          foldingtable_2_adjust
           
           #Findmatchingupstream(firstmirnanuc5p+1)
           
           ## find the matching base!
           Findmatchingupstream<-function(querynt){
-            for(pos in 1:(nrow(foldingtable_2)-querynt)){
-              if(sum(foldingtable_2$dotnumeric[(querynt+1) : (querynt+pos) ]) == 1){
+            for(pos in 1:(nrow(foldingtable_2_adjust)-querynt)){
+              if(sum(foldingtable_2_adjust$dotnumeric[(querynt+1) : (querynt+pos) ]) == 1){
                 complement=pos+querynt
                 return(complement)
                 break()
@@ -991,22 +992,22 @@ server <- function(input, output, session) {
           
           ###### Evaluate DROSHA cleavage
           
-          if(foldingtable_2[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
+          if(foldingtable_2_adjust[firstmirnanuc5p,"dots"]!="."){#if 1st one, has a complementary
             Compl_to_firstmirnanuc5p <- Findmatchingupstream(firstmirnanuc5p) ## Get complementary to first
             
             if(!is.null(Compl_to_firstmirnanuc5p)){
-              if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
+              if(foldingtable_2_adjust[Compl_to_firstmirnanuc5p,"color"]!="Black" & foldingtable_2_adjust[Compl_to_firstmirnanuc5p,"color"]!=foldingtable_2_adjust[firstmirnanuc5p,"color"] ){# If complementary is not same color not black
                 firstMIRoverlap<-"In"
-                if(foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+2,"color"]!="Black" & foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" ){# if only 2 upstream are also colored
-                  if(sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
+                if(foldingtable_2_adjust[Compl_to_firstmirnanuc5p+1,"color"]!="Black" & foldingtable_2_adjust[Compl_to_firstmirnanuc5p+2,"color"]!="Black" & foldingtable_2_adjust[Compl_to_firstmirnanuc5p+3,"color"]=="Black" ){# if only 2 upstream are also colored
+                  if(sum(str_count(foldingtable_2_adjust[(firstmirnanuc5p-2):(firstmirnanuc5p+1),"dots"], "\\(" ))==4 ){ # if first, second and 2 previous all matched is perfect
                     print("Perfect Drosha")
                     overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Perfect pri-miRNA (Drosha) cleavage", perfectmatch_animal) )
                     overhang_plant<-rbind(overhang_plant, c("Perfect pri-miRNA cleavage", perfectmatch_plant))
-                  }else if(foldingtable_2[Compl_to_firstmirnanuc5p+3,"color"]=="Black" & sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
+                  }else if(foldingtable_2_adjust[Compl_to_firstmirnanuc5p+3,"color"]=="Black" & sum(str_count(foldingtable_2_adjust[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ){#they will at least have 3 complementary (the first+2) including 3rd before, bc somtimes mini bouble
                     print("Acceptable Drosha")
                     overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Acceptable pri-miRNA (Drosha) cleavage", acceptable_animal) )
                     overhang_plant<-rbind(overhang_plant, c("Acceptable pri-miRNA cleavage", acceptable_plant))
-                  }else if ( sum(str_count(foldingtable_2[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ) {#complementarity less than 3
+                  }else if ( sum(str_count(foldingtable_2_adjust[(firstmirnanuc5p-2):(firstmirnanuc5p+3),"dots"], "\\(" ))>=3 ) {#complementarity less than 3
                     print("Weak Drosha 1")
                     overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Suspicious pri-miRNA (Drosha) cleavage", suspicious_animal) )
                     overhang_plant<-rbind(overhang_plant, c("Suspicious pri-miRNA cleavage", suspicious_plant))
@@ -1015,7 +1016,7 @@ server <- function(input, output, session) {
                     overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Bad pri-miRNA (Drosha) cleavage", 0) )
                     overhang_plant<- rbind(overhang_plant, c("Bad pri-miRNA cleavage" , 0))
                   }
-                }else if( (foldingtable_2[(Compl_to_firstmirnanuc5p+3),"color"]=="Black" |foldingtable_2[(Compl_to_firstmirnanuc5p+4),"color"]=="Black") & foldingtable_2[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
+                }else if( (foldingtable_2_adjust[(Compl_to_firstmirnanuc5p+3),"color"]=="Black" |foldingtable_2_adjust[(Compl_to_firstmirnanuc5p+4),"color"]=="Black") & foldingtable_2_adjust[Compl_to_firstmirnanuc5p+1,"color"]!="Black") {#If only 1 upstream colored, and 1st is paired
                   print("Weak Drosha 2")
                   overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Suspicious pri-miRNA (Drosha) cleavage", suspicious_animal) )
                   overhang_plant<-rbind(overhang_plant, c("Suspicious pri-miRNA cleavage", suspicious_plant))
@@ -1025,7 +1026,7 @@ server <- function(input, output, session) {
                   overhang_plant<-rbind(overhang_plant, c("Bad pri-miRNA cleavage" , 0))
                 }# none upstream colored
                 ### if the 1st nuc, complement balck   firstMIRoverlap<-"None"
-              }else if(foldingtable_2[Compl_to_firstmirnanuc5p,"color"]=="Black" ) { #if complement of the first is a black
+              }else if(foldingtable_2_adjust[Compl_to_firstmirnanuc5p,"color"]=="Black" ) { #if complement of the first is a black
                 firstMIRoverlap<-"Out"
                 print("Bad Drosha 3p must hang")
                 overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Bad pri-miRNA (Drosha) cleavage, 3p must hang", 0) )
@@ -1041,7 +1042,7 @@ server <- function(input, output, session) {
             }
             
           }else if( !is.null(Findmatchingupstream(firstmirnanuc5p+1))){## if first no, pair, but second yes
-            if(foldingtable_2[firstmirnanuc5p+1,"dots"]!="." & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!="Black" & foldingtable_2[Findmatchingupstream(firstmirnanuc5p+1),"color"]!=foldingtable_2[firstmirnanuc5p,"color"]  ){# If  first doesnt have coplementary, check 2nd
+            if(foldingtable_2_adjust[firstmirnanuc5p+1,"dots"]!="." & foldingtable_2_adjust[Findmatchingupstream(firstmirnanuc5p+1),"color"]!="Black" & foldingtable_2_adjust[Findmatchingupstream(firstmirnanuc5p+1),"color"]!=foldingtable_2_adjust[firstmirnanuc5p,"color"]  ){# If  first doesnt have coplementary, check 2nd
               firstMIRoverlap<-"In"
               print("Could still be good")
               overhang_animal_adjust<-rbind(overhang_animal_adjust, c("Acceptable pri-miRNA (Drosha) cleavage", acceptable_animal) )
@@ -1070,23 +1071,23 @@ server <- function(input, output, session) {
             firstmirnaLastnuc=max(which(foldingtable$color==firstcolor))
             
             
-            if(foldingtable_2[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
+            if(foldingtable_2_adjust[firstmirnaLastnuc,"dots"]!="."){#if 1st one, has a complementary
               Compl_to_firstmirnaLastnuc<-Findmatchingupstream(firstmirnaLastnuc)
               
               if(!is.null(Compl_to_firstmirnaLastnuc)){
                 
-                if(foldingtable_2[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
+                if(foldingtable_2_adjust[Compl_to_firstmirnaLastnuc,"color"]=="Black" ) { #if complement of the first is a black
                   secondMIRoverlap<-"Out"
-                  if( foldingtable_2[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
+                  if( foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc+1),"color"]=="Black" & foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black"  & sum(str_count(foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))==4  ){### Last one is complement to black (and it is not hanging same arm both times)
                     # if hanging 2 and good matches
                     print("Perfect Dicer 2")
                     overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Perfect loop (Dicer) cleavage", perfectmatch_animal) )
                     overhang2_plant_adjust<-rbind(overhang2_plant_adjust, c("Perfect loop cleavage", perfectmatch_plant))
-                  }else if(  foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black" & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
+                  }else if(  foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black" & sum(str_count(foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3){
                     print("Acceptable Dicer 1")
                     overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Acceptable loop (Dicer) cleavage", acceptable_animal) )
                     overhang2_plant_adjust<-rbind(overhang2_plant_adjust, c("Acceptable loop cleavage", acceptable_plant))
-                  }else if( ((foldingtable_2[(Compl_to_firstmirnaLastnuc+3),"color"]!="Black" | foldingtable_2[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black")) & sum(str_count(foldingtable_2[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3) {#
+                  }else if( ((foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc+3),"color"]!="Black" | foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc+2),"color"]!="Black")) & sum(str_count(foldingtable_2_adjust[(Compl_to_firstmirnaLastnuc-1):(Compl_to_firstmirnaLastnuc+3),"dots"], "\\)" ))>=3) {#
                     #if hanging 3 and few mismatches
                     print("WEAK")
                     overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Suspicious loop (Dicer) cleavage", suspicious_animal) )
@@ -1105,13 +1106,13 @@ server <- function(input, output, session) {
                 overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Uncommon structure", 0) )
                 overhang2_plant_adjust<-rbind(overhang2_plant_adjust, c("Uncommon cleavage" , 0))}
               
-            }else if(foldingtable_2[(firstmirnaLastnuc-1),"dots"]!="."){# if 2nd has a pair
+            }else if(foldingtable_2_adjust[(firstmirnaLastnuc-1),"dots"]!="."){# if 2nd has a pair
               Compl_to_firstmirnaPENULTtnuc<-Findmatchingupstream(firstmirnaLastnuc-1)
               if (is.null(Findmatchingupstream(firstmirnaLastnuc-1))){
                 print("Not normal structure")
                 overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Uncommon structure", 0) )
                 overhang2_plant_adjust<-rbind(overhang2_plant_adjust, c("Uncommon cleavage" , 0))
-              }else if( foldingtable_2[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
+              }else if( foldingtable_2_adjust[(Compl_to_firstmirnaPENULTtnuc),"color"]=="Black" &   foldingtable_2_adjust[(Compl_to_firstmirnaPENULTtnuc+1),"color"]!="Black" ){
                 print("Acceptable Dicer Loop 1b")
                 overhang2_animal_adjust<-rbind(overhang2_animal_adjust, c("Acceptable loop (Dicer) cleavage", acceptable_animal) )
                 overhang2_plant_adjust<-rbind(overhang2_plant_adjust, c("Acceptable loop cleavage", acceptable_plant))
@@ -1137,12 +1138,11 @@ server <- function(input, output, session) {
           
         }# if more than 20 Ns in precursor
         
-        
-        
+      
         ###############creat a final list contain structure information ####################
        
         if ((as.numeric(overhang2_animal[i,2]) + as.numeric(overhang_animal[i, 2])) < (as.numeric(overhang2_animal_adjust[i, 2])+ as.numeric(overhang_animal_adjust[i, 2]))) {
-          
+          print(((as.numeric(overhang2_animal[i,2]) + as.numeric(overhang_animal[i, 2])) < (as.numeric(overhang2_animal_adjust[i, 2])+ as.numeric(overhang_animal_adjust[i, 2]))))
           levels(mirnadf$mature) <- c(levels(mirnadf$mature), adjustMatureSequence [i])
           mirnadf$mature[i] = adjustMatureSequence [i]
           levels(mirnadf$star) <- c(levels(mirnadf$star), adjustStarSequence [i])
@@ -1151,12 +1151,22 @@ server <- function(input, output, session) {
           overhang2_animal [i,]<- overhang2_animal_adjust[i,]
           finalStarPosition[[i]] <- adjustStarPosition[[i]] 
           finalMaturePosition[[i]] <- adjustMaturePosition[[i]]
+          foldingtable_2 <- foldingtable_2_adjust
           
         } else {
           finalStarPosition [[i]] <- starcord1
           finalMaturePosition[[i]] <- maturecord1
         }
+          
+        ## Check the mature/star sequence length
         
+
+        penaltyscore1<-ifelse((max(finalStarPosition[[i]]) - min(finalStarPosition[[i]]) + 1) < 18 |  (max(finalStarPosition[[i]]) - min(finalStarPosition[[i]]) + 1) > 26, penalty_length, 0 )
+        penaltyscore2<-ifelse((max(finalMaturePosition[[i]]) - min(finalMaturePosition[[i]]) + 1) < 18 |  (max(finalMaturePosition[[i]]) - min(finalMaturePosition[[i]]) + 1) > 26, penalty_length, 0 )
+        penaltyscorelength_animal<<-penaltyscore2+penaltyscore1
+        
+        ## later I would add plants
+
 
         
         ###Lets adjust image parameters depending on length
@@ -1190,43 +1200,47 @@ server <- function(input, output, session) {
         
         ##################I should use it##############################
         ## it assumes that iverhang is correct (otherwise will be filtered by the overhang fucntion)
-        
-        Arm1struct<-foldingtable_2[foldingtable_2$color==color_arm1,  ]
-        Arm1struct_min2<-Arm1struct[1:(nrow(Arm1struct)-2),] ## skip last 2nts that are should be hanging
-        MismatchesArm1<-count(Arm1struct_min2$dots==".")
-        MismatchesArm1
-        
-        BulgesDFArm1<-data.frame(unclass(rle(as.character(Arm1struct_min2$dots))))
-        BulgesDFArm1[BulgesDFArm1$values==".",]
-        
-        Arm2struct<-foldingtable_2[foldingtable_2$color==color_arm2,  ]
-        Arm2struct_min2<-Arm2struct[3:(nrow(Arm2struct)),] ## skip first 2nts that are should be hanging
-        MismatchesArm2<-count(Arm2struct_min2$dots==".")
-        MismatchesArm2
-        BulgesDFArm2<-as.data.frame(unclass(rle(as.character(Arm2struct_min2$dots))))
-        BulgesDFArm2[BulgesDFArm2$values==".",]
-        
-        ## scores mismatches#########
-        
-        if (specie=="Animal"){
-          if (MismatchesArm1>6 | MismatchesArm2 >6){# currently not used
-            mismatch_category<--5
+        if ((as.numeric(overhang2_animal[i,2]) + as.numeric(overhang_animal[i, 2])) >= -5) {
+          Arm1struct<-foldingtable_2[foldingtable_2$color==color_arm1,  ]
+          Arm1struct_min2<-Arm1struct[1:(nrow(Arm1struct)-2),] ## skip last 2nts that are should be hanging
+          MismatchesArm1<-count(Arm1struct_min2$dots==".")
+          MismatchesArm1
+          
+          BulgesDFArm1<-data.frame(unclass(rle(as.character(Arm1struct_min2$dots))))
+          BulgesDFArm1[BulgesDFArm1$values==".",]
+          
+          Arm2struct<-foldingtable_2[foldingtable_2$color==color_arm2,  ]
+          Arm2struct_min2<-Arm2struct[3:(nrow(Arm2struct)),] ## skip first 2nts that are should be hanging
+          MismatchesArm2<-count(Arm2struct_min2$dots==".")
+          MismatchesArm2
+          BulgesDFArm2<-as.data.frame(unclass(rle(as.character(Arm2struct_min2$dots))))
+          BulgesDFArm2[BulgesDFArm2$values==".",]
+          
+          ## scores mismatches#########
+          
+          if (specie=="Animal"){
+            if (MismatchesArm1>6 | MismatchesArm2 >6){# currently not used
+              mismatch_category<--5
+            }else{
+              mismatch_category<- 0
+            }
+            print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch_category))
           }else{
-            mismatch_category<- 0
+            if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
+              mismatch_category<- -5
+            }else if( max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths) >3 | max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths) >3){
+              mismatch_category<- -1
+            }else{
+              mismatch_category<-0
+            }
+            mirnadf_mismatch<-rbind(mirnadf_mismatch, mismatch_category)
+            print(paste("Mismatches","mismatches=",MismatchesArm1,MismatchesArm2,"Bulges",max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths),max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths),mismatch))
           }
-          print(paste("Mismatches",MismatchesArm1,MismatchesArm2,mismatch_category))
-        }else{
-          if ( MismatchesArm1>4 | MismatchesArm2 >4){ # more than 4 mismatches is worng in plants
-            mismatch_category<- -5
-          }else if( max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths) >3 | max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths) >3){
-            mismatch_category<- -1
-          }else{
-            mismatch_category<-0
-          }
-          mirnadf_mismatch<-rbind(mirnadf_mismatch, mismatch_category)
-          print(paste("Mismatches","mismatches=",MismatchesArm1,MismatchesArm2,"Bulges",max(BulgesDFArm1[BulgesDFArm1$values==".",]$lengths),max(BulgesDFArm2[BulgesDFArm2$values==".",]$lengths),mismatch))
+          mismatchesFilter<<-mirnadf_mismatch
+        } else {
+          mismatchesFilter <<- 0
         }
-        mismatchesFilter<<-mirnadf_mismatch
+        
         #incProgress(1/n, detail = paste("Prec", i, "of", n))
         
 
@@ -1274,7 +1288,7 @@ server <- function(input, output, session) {
     )
     Score_expression_animal<-rep(0, nrow(mirnadf)) # set all scores to zero
     Score_expression_plant<-rep(0, nrow(mirnadf)) # set all scores to zero
-    withProgress(message = 'Creating Expression...', value = 0, {
+    withProgress(message = 'calculating Expression...', value = 0, {
       
       q <- nrow(mirnadf)
       
@@ -1283,6 +1297,7 @@ server <- function(input, output, session) {
       starCounts <<- NULL
       loopCounts <<- NULL
       for(i in 1:nrow(mirnadf) ) {
+        incProgress(1/q, detail = paste("Plot", i, "of", q))
         
         ##convert in GRanges
         mirname=mirnadf$ID[i]
@@ -1327,7 +1342,6 @@ server <- function(input, output, session) {
         mtext(at = plot[1,matureseq_i:matureseq_e], text = seq[matureseq_i:matureseq_e],col=color_arm1, side = 1,  line = 0, cex=1, font=( face=2))
         dev.off()
         
-        incProgress(1/q, detail = paste("Plot", i, "of", q))
         
         ##############check the expression###################
         starReads <<- mean(selectedRange_coverage[star_i:star_e])
@@ -1349,17 +1363,16 @@ server <- function(input, output, session) {
         checkMatureReadsLeft <- mean(selectedRange_coverage[matureseq_i:(matureseq_i+2)])
         checkStarReadsRight <- mean(selectedRange_coverage[(star_e-2):star_e])
         checkStarReadsLeft <- mean(selectedRange_coverage[star_i:(star_i+2)])
-        
         #########Give the score For expression############################
         if (starReads == 0 | matureReads == 0) { # IF no expression evidence, give a punishment!
           scoreExpression <- c (-3)
         } else {
           ## Check the expression and loop reads
-          if(starReads > ExpLevel2 & matureReads > ExpLevel2 & (loopReads / (starReads + matureReads + loopReads) > 0.04)) {
+          if(starReads > ExpLevel2 & matureReads > ExpLevel2 & (loopReads / (starReads + matureReads + loopReads) > 0.07)) {
             scoreExpression <- c(ExpLevel2_pointsAnimal)
-          } else if (starReads > ExpLevel1 & matureReads > ExpLevel1 & (loopReads / (starReads + matureReads + loopReads) > 0.04)) {
+          } else if (starReads > ExpLevel1 & matureReads > ExpLevel1 & (loopReads / (starReads + matureReads + loopReads) > 0.07)) {
             scoreExpression <- c (ExpLevel1_pointsAnimal)
-          } else if ((starReads > ExpLevel2 | matureReads > ExpLevel2) & (loopReads / (starReads+matureReads+loopReads) > 0.04)) {
+          } else if ((starReads > ExpLevel2 | matureReads > ExpLevel2) & (loopReads / (starReads+matureReads+loopReads) > 0.07)) {
             scoreExpression <- c (0.5)
           } else {
             scoreExpression <- c(0)
@@ -1367,22 +1380,21 @@ server <- function(input, output, session) {
           ## check loop Reads
           if (loopReads / (starReads + matureReads + loopReads) > 0.04 ) {
             scoreExpression = scoreExpression - 2
+            print("Too many reads in the loop")
           }
           
           ## Check mountain-like structure
-          if (checkMatureReadsLeft / matureReads < 0.9 | checkStarReadsRight / starReads < 0.9) {
-            scoreExpression = scoreExpression - 2
+          if ((checkMatureReadsLeft / matureReads < 0.7) | (checkStarReadsRight / starReads < 0.7)) {
+            scoreExpression = scoreExpression - 0.5
             print("Penalty mountain-like expression")
           }
           
           ###check franking expression
-          if (flankReadsLeft/ (matureReads+starReads) > 0.07 | flankReadsright / (matureReads + starReads) > 0.07) {
-            scoreExpression <- scoreExpression - 2
+          if (flankReadsLeft/ (matureReads+starReads) > 0.04 | flankReadsright / (matureReads + starReads) > 0.04) {
+            scoreExpression <- scoreExpression - 0.5
             print("Penalty franking/loop expression")
           }
-          
         }
-        
         Score_expression_animal[i] <- scoreExpression
       }#close for
       
@@ -1710,7 +1722,6 @@ server <- function(input, output, session) {
     
     
     ##### SET score threshold!
-    scorethreshold<<-14
     #####
     ## pre-check some rows absed on their score
     res$NewName<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_1\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
@@ -1986,5 +1997,12 @@ server <- function(input, output, session) {
   })# close button integration
   
 }#close server
+
+
+
+
+
+
+
 
 
