@@ -117,7 +117,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                        img(src="/appfigs/Bge-Mir-1_pre_fold.jpg" ,width="350" , height="300")
                                 ),
                                 column(6,
-                                       h4("3- Calculate expression"),
+                                       h4("4- Calculate expression"),
                                        h5("~ After uploading a BAM file with small RNA-seq reads against a genome, caclulate expression of mature/star/prec"),
                                        h5("~ Creates a bar plot in which for each nt of the precursor shows the number of mapped reads"),
                                        h6("~ Score: > 2 reads in mature = +3 pts // >2 reads in star = +3pts")
@@ -126,7 +126,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               fluidRow(
                                 
                                 column(6,
-                                       h4("4- Conservation"),
+                                       h4("5- Conservation"),
                                        h5("~ mirExpert takes the mature seqeucne and aligns against miRBase"),
                                        h5("~ Report the alignments (max. 15)"),
                                        h6("~ Score depends on the number of hits. Max=3 "),
@@ -134,7 +134,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                        
                                 ),
                                 column(6,
-                                       h4("5- Integrate"),
+                                       h4("6- Integrate"),
                                        h5("~ Integrates all the info in a single table"),
                                        h5("~ Select all candidates you want to accept as real miRNAs (pre-selected > 8pts)"),
                                        h5("~ Download selected miRNAs")
@@ -144,7 +144,8 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               fluidRow(
                                 column(6,
                                        h4("7- Give us feedback"),
-                                       h5("guillemyllabou@ufl.edu")
+                                       h5("guillemyllabou@ufl.edu"),
+                                       h5("tianyuan.liu@ufl.edu")
                                 ),
                                 column(6,
                                        h4("Animal / Plant "),
@@ -252,3 +253,4 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                           
                  )
 )
+
