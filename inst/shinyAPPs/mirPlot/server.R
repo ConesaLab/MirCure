@@ -69,23 +69,23 @@ penatlytoomanyreadsloopPlant<<-(5)
 ### Conservation scores (important for Plants!)
 
 #### >20 miRNAs in mirbase identical
-Score_conservation_20id_Animal<<-1
+Score_conservation_20id_Animal<<-0.25
 Score_conservation_20id_Plant<<-20
 
 #### 6-20 miRNAs identicals, + similar (same seed) >20
-Score_conservation_6_20id20_Animal<<-1
+Score_conservation_6_20id20_Animal<<-0.25
 Score_conservation_6_20id20_Plant<<-20
 
 #### 2-5 miRNAs identicals, + similar (same seed) >20
-Score_conservation_2_5id20_Animal<<-0.5
+Score_conservation_2_5id20_Animal<<-0.25
 Score_conservation_2_5id20_Plant<<-20
 
 #### 6-20 miRNAs identicals, + similar (same seed) <20
-Score_conservation_6_20id_Animal<<-0
+Score_conservation_6_20id_Animal<<-0.25
 Score_conservation_6_20id_Plant<<-20
 
 #### 2-5 miRNAs identicals, + similar (same seed) <20
-Score_conservation_2_5id_Animal<<- (0.5)
+Score_conservation_2_5id_Animal<<- (0)
 Score_conservation_2_5id_Plant<<-20
 
 #### 0 identicals, + similar (same seed) >20
@@ -94,7 +94,7 @@ Score_conservation_0id20_Plant<<-20
 
 
 #### 0 identicals, + similar (same seed) <20
-Score_conservation_0id_Animal<<-(-0.5)
+Score_conservation_0id_Animal<<-(0)
 Score_conservation_0id_Plant<<-20
 
 
@@ -1253,7 +1253,7 @@ server <- function(input, output, session) {
       starCounts <<- NULL
       loopCounts <<- NULL
       for(i in 1:nrow(mirnadf) ) {
-        
+
         incProgress(1/q, detail = paste(i, "of", q))
         ##convert in GRanges
         mirname=mirnadf$ID[i]
@@ -1311,45 +1311,118 @@ server <- function(input, output, session) {
           flankReadsLeft <- mean(selectedRange_coverage[(matureseq_e+1):length(selectedRange_coverage)])
           flankReadsright <- mean(selectedRange_coverage[1:(star_i-1)])
         }
+        
+        ## make sure mature reads is the largest!!!
+        if (starReads > matureReads) {
+          tempReads <-  matureReads
+          matureReads <- starReads
+          starReads <- tempReads
+        }
         matureCounts[i] <- matureReads
         starCounts[i] <- starReads
         loopCounts[i] <- loopReads
+        
         ######check the mountain-like structure#########
-        checkMatureReadsRight <- mean(selectedRange_coverage[(matureseq_e-2):matureseq_e])
+        ## make sure matureReads > starReads.
         checkMatureReadsLeft <- mean(selectedRange_coverage[matureseq_i:(matureseq_i+2)])
-        checkStarReadsRight <- mean(selectedRange_coverage[(star_e-2):star_e])
         checkStarReadsLeft <- mean(selectedRange_coverage[star_i:(star_i+2)])
+        if (checkMatureReadsLeft < checkStarReadsLeft) {
+          tempReads <- checkMatureReadsLeft
+          checkMatureReadsLeft <- checkStarReadsLeft
+          checkStarReadsLeft <- tempReads
+        }
         #########Give the score For expression############################
         if (starReads == 0 | matureReads == 0) { # IF no expression evidence, give a punishment!
-          scoreExpression <- c (-3)
+          scoreExpression <- c (-5)
         } else {
           ## Check the expression and loop reads
-          if(starReads > ExpLevel2 & matureReads > ExpLevel2 & (loopReads / (starReads + matureReads + loopReads) < 0.07) & starReads > loopReads & matureReads > loopReads) {
-            scoreExpression <- c(ExpLevel2_pointsAnimal)
-          } else if (starReads > ExpLevel1 & matureReads > ExpLevel1 & (loopReads / (starReads + matureReads + loopReads) < 0.07) & starReads > loopReads & matureReads > loopReads) {
-            scoreExpression <- c (ExpLevel1_pointsAnimal)
-          } else if ((starReads > ExpLevel2 | matureReads > ExpLevel2) & (loopReads / (starReads+matureReads+loopReads) < 0.07) & starReads > loopReads & matureReads > loopReads) {
+          if(starReads > ExpLevel2 & matureReads > ExpLevel2 & (loopReads / (starReads + matureReads + loopReads) < 0.2) & starReads > loopReads & matureReads > loopReads) {
+            scoreExpression <- c(ExpLevel2_pointsAnimal) 
+          } else if (starReads > ExpLevel1 & matureReads > ExpLevel1 & (loopReads / (starReads + matureReads + loopReads) < 0.2) & starReads > loopReads & matureReads > loopReads) {
+            scoreExpression <- c (ExpLevel2_pointsAnimal)
+          } else if ((starReads > ExpLevel2 | matureReads > ExpLevel2) & (loopReads / (starReads+matureReads+loopReads) < 0.2) & starReads > loopReads & matureReads > loopReads) {
             scoreExpression <- c (0.5)
           } else {
             scoreExpression <- c(0)
           }
           ## check loop Reads
-          if (loopReads / (starReads + matureReads + loopReads) > 0.04 ) {
+          if (loopReads / (starReads + matureReads + loopReads) > 0.4 | loopReads / starReads > 0.5 | loopReads / matureReads > 0.5) {
             scoreExpression = scoreExpression - 2
-            print("Too many reads in the loop")
+            print("Too many reads in the loop 2")
+            
+          } else if (loopReads / (starReads + matureReads + loopReads) > 0.2 | loopReads / starReads > 0.3 | loopReads/matureReads > 0.3) {
+            scoreExpression = scoreExpression - 1.5
+            print("Too many reads in the loop 1.5")
+            
+          } else if (loopReads / (starReads + matureReads + loopReads) > 0.12 | loopReads / starReads > 0.2 | loopReads/matureReads > 0.2) {
+            scoreExpression = scoreExpression - 0.75
+            print("Too many reads in the loop 0.75")
+            
+          } else if (loopReads / (starReads + matureReads + loopReads) > 0.06 | loopReads / starReads > 0.1 | loopReads/matureReads > 0.1) {
+            scoreExpression = scoreExpression - 0.25
+            print("Too many reads in the loop 0.25")
           }
           
           ## Check mountain-like structure
-          if ((checkMatureReadsLeft / matureReads < 0.7) | (checkStarReadsRight / starReads < 0.7)) {
-            scoreExpression = scoreExpression - 0.5
-            print("Penalty mountain-like expression")
+          if (flankReadsLeft < flankReadsright) {
+            if ((checkMatureReadsLeft / matureReads < 0.7) | (checkStarReadsRight / starReads < 0.7)) {
+              scoreExpression = scoreExpression - 0.75
+              print("Penalty mountain-like expression 0.5")
+              
+            } else if ((checkMatureReadsLeft / matureReads < 0.8) | (checkStarReadsRight / starReads < 0.8)) {
+              scoreExpression = scoreExpression - 0.5
+              print("Penalty mountain-like expression 0.25")
+              
+            }
+          } else {
+            if ((checkStarReadsLeft / matureReads < 0.7) | (checkMatureReadsLeft / starReads < 0.7)) {
+              scoreExpression = scoreExpression - 0.5
+              print("Penalty mountain-like expression 0.75")
+              
+            } else if ((checkMatureReadsLeft / matureReads < 0.8) | (checkStarReadsRight / starReads < 0.8)) {
+              scoreExpression = scoreExpression - 0.25
+              print("Penalty mountain-like expression 0.75")
+            }
+          }
+         
+          
+          ### check franking expression (based on different expression level, give different punishment)
+          if (flankReadsLeft > flankReadsright) {
+            if(flankReadsLeft / (matureReads+starReads) > 0.4 | flankReadsright / (matureReads + starReads) > 0.4 | flankReadsLeft/matureReads > 0.5 | flankReadsright/starReads > 0.5) {
+              scoreExpression <- scoreExpression - 2
+              print("Penalty franking expression 2")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.2 | flankReadsright / (matureReads + starReads) > 0.2 | flankReadsLeft/matureReads > 0.4 | flankReadsright/starReads > 0.4){
+              scoreExpression <- scoreExpression - 1.5
+              print("Penalty franking expression 1.5")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.12 | flankReadsright / (matureReads + starReads) > 0.12 | flankReadsLeft/matureReads > 0.2 | flankReadsright/starReads > 0.2) {
+              scoreExpression <- scoreExpression - 0.75
+              print("Penalty franking expression 0.75")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.06 | flankReadsright / (matureReads + starReads) > 0.06 | flankReadsLeft/matureReads > 0.1 | flankReadsright/starReads > 0.1) {
+              scoreExpression <- scoreExpression - 0.25
+              print("Penalty franking expression 0.25")
+            }
+          } else {
+            if(flankReadsLeft / (matureReads+starReads) > 0.4 | flankReadsright / (matureReads + starReads) > 0.4 | flankReadsright/matureReads > 0.5 | flankReadsLeft/starReads > 0.5) {
+              scoreExpression <- scoreExpression - 2
+              print("Penalty franking expression 2")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.2 | flankReadsright / (matureReads + starReads) > 0.2 | flankReadsright/matureReads > 0.4 | flankReadsLeft/starReads > 0.4){
+              scoreExpression <- scoreExpression - 1.5
+              print("Penalty franking expression 1.5")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.12 | flankReadsright / (matureReads + starReads) > 0.12 | flankReadsright/matureReads > 0.2 | flankReadsLeft/starReads > 0.2) {
+              scoreExpression <- scoreExpression - 0.75
+              print("Penalty franking expression 0.75")
+              
+            } else if (flankReadsLeft/ (matureReads+starReads) > 0.06 | flankReadsright / (matureReads + starReads) > 0.06 | flankReadsright/matureReads > 0.1 | flankReadsLeft/starReads > 0.1) {
+              scoreExpression <- scoreExpression - 0.25
+              print("Penalty franking expression 0.25")
+            }
           }
           
-          ###check franking expression
-          if (flankReadsLeft/ (matureReads+starReads) > 0.04 | flankReadsright / (matureReads + starReads) > 0.04) {
-            scoreExpression <- scoreExpression - 1
-            print("Penalty franking/loop expression")
-          }
         }
         Score_expression_animal[i] <- scoreExpression
       }#close for
@@ -1953,6 +2026,13 @@ server <- function(input, output, session) {
   })# close button integration
   
 }#close server
+
+
+
+
+
+
+
 
 
 
