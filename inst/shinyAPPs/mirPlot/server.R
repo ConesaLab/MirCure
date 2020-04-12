@@ -1,11 +1,11 @@
-Define server logic to summarize and view selected dataset ----
-  #install.packages("LncFinder", lib="/ufrc/conesa/guillemyllabou/R_libs")
-  #install.packages("shinyFiles", lib="/ufrc/conesa/guillemyllabou/R_libs")
+# Define server logic to summarize and view selected dataset ----
+#install.packages("LncFinder", lib="/ufrc/conesa/guillemyllabou/R_libs")
+#install.packages("shinyFiles", lib="/ufrc/conesa/guillemyllabou/R_libs")
 
-  ###### In cluster, activate:
-  #system("module load viennarna")
-  #.libPaths(  "/ufrc/conesa/guillemyllabou/R_libs" )
-  ######
+###### In cluster, activate:
+#system("module load viennarna")
+#.libPaths(  "/ufrc/conesa/guillemyllabou/R_libs" )
+######
 library("GenomicAlignments")
 library("Biostrings")
 library("DT")
@@ -2026,7 +2026,3 @@ server <- function(input, output, session) {
   })# close button integration
 
 }#close server
-
-
-
-
