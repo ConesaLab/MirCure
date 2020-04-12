@@ -1,28 +1,28 @@
 # Define UI for dataset viewer app ----
 library("shinythemes")
 ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
-                 
+
                  tabPanel(title='Load Data',
                           sidebarLayout(
                             sidebarPanel(
-                              
+
                               radioButtons("specie", "What kind of organism?",
-                                           c("Animal" = "Animal","Plant" = "Plant" )),    
-                              
-                              
-                              
+                                           c("Animal" = "Animal","Plant" = "Plant" )),
+
+
+
                               radioButtons("Genome", "Genome location:",
                                            c("Select available genome" = "Select","Upload a genome" = "Upload" )),
-                              
+
                               conditionalPanel(
                                 condition = "input.Genome == 'Upload'",
-                                fileInput("genome0", label="Upload your genome file",  multiple = FALSE, accept = c(".fa",".fasta"),width="60%")  
-                              ) ,      
+                                fileInput("genome0", label="Upload your genome file",  multiple = FALSE, accept = c(".fa",".fasta"),width="60%")
+                              ) ,
                               conditionalPanel(
                                 condition = "input.Genome == 'Select'",
                                 selectInput("genome1", "Choose Genome from List",choices = c("NULL",list.files('data/genomes/')), selected = NULL ,  multiple = FALSE,width="60%")
-                              ) ,    
-                              
+                              ) ,
+
                               tags$hr(),
                               # Input: Select a file ----
                               fileInput("precs", "Precursors (.gff3)",
@@ -40,34 +40,34 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               #tags$hr(),
                               radioButtons("matureorarm", "Are you uploading mature/star sequences or 5p/3p ?",
                                            c("Mature/Star" = "maturestar","5p/3p" = "arm5p3p" )),
-                              
-                              
+
+
                               numericInput("extrabases", "Precursor flanking bases to retrieve:", 11, min = 0, max = 20,width="30%"),
-                              
+
                               actionButton("ButtonSeqs", "1- Get sequences"),
                               # Horizontal line ----
-                              
+
                               radioButtons("Bammenu", "Type:",
                                            c("Select available BAM" = "Selectbam","Upload your BAM" = "Uploadbam" )),
-                              
+
                               conditionalPanel(
                                 condition = "input.Bammenu == 'Uploadbam'",
                                 fileInput("bam", "BAM file (.BAM)", multiple = FALSE,accept = c(".bam"),width="60%")
-                              ) ,      
+                              ) ,
                               conditionalPanel(
                                 condition = "input.Bammenu == 'Selectbam'",
                                 selectInput("bam1", "Choose BAM from List",choices = c("NULL",list.files('data/bamfiles/')), selected = NULL ,  multiple = FALSE,width="60%")
-                              ) ,  
+                              ) ,
                               actionButton("ButtonCheck", "2- Adjust Structure"),
-                              
+
                               tags$hr(),
                               actionButton("ButtonFold", "3- Fold sequences (might take a long time)"),
                               # Horizontal line ----
                               tags$hr(),
-                              
+
 
                               # Input: Select a file ----
-                              
+
                               #        tags$hr(),
                               actionButton("ButtonExp", "4- Calculate expression"),
                               tags$hr(),
@@ -76,13 +76,13 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               actionButton("ButtonIntegrate", "6- Intergrate")
                               #tags$hr(),
                               #bookmarkButton()
-                      
+
                             ),
-                            
+
                             # Main panel for displaying outputs ----
                             mainPanel(
                               h1("Welcome to mirExpert"),
-                              
+
                               fluidRow(
                                 column(6,
                                        h4("0 - Load candidate miRNA annotations"),
@@ -105,7 +105,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                        h5("~ mirExpert also saves the previous annotation and compare the final score with the adjust one."),
                                        h5("~  mirExpert would report the structure with a high final score."),
                                        img(src="/appfigs/adjust_annotation.png" ,width="350" , height="300")
-                                       
+
                                 ),
                                 column(6,
                                        h4("3- Fold sequences"),
@@ -124,14 +124,14 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                 )
                               ),
                               fluidRow(
-                                
+
                                 column(6,
                                        h4("5- Conservation"),
                                        h5("~ mirExpert takes the mature seqeucne and aligns against miRBase"),
                                        h5("~ Report the alignments (max. 15)"),
                                        h6("~ Score depends on the number of hits. Max=3 "),
                                        img(src="/appfigs/alignments.png" ,width="400" , height="350")
-                                       
+
                                 ),
                                 column(6,
                                        h4("6- Integrate"),
@@ -140,7 +140,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                        h5("~ Download selected miRNAs")
                                 )
                               ),
-                              
+
                               fluidRow(
                                 column(6,
                                        h4("7- Give us feedback"),
@@ -152,56 +152,56 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                        h5("~ Modifies score system"),
                                        h5("~ Animal loop length should be shorter than plants"),
                                        h5("~ In plants it is important to find it conserved, otherwise could be a siRNA")
-                                       
+
                                 )
                               )
                             )
                           )
                  ),
-                 
-                 
-                 
-                 
-                 
+
+
+
+
+
                  tabPanel(title = 'Sequence Info',
                           # Horizontal line ----
                           tags$hr(),
                           h1("Nucelotide sequences"),
-                          
+
                           h3("miRNA SEQS"),
                           DT::dataTableOutput("mirnaSeqs")
                  ),
-                 
+
                  tabPanel(title = 'RNA Folding',
                           # Horizontal line ----
                           tags$hr(),
                           h1("Secondary structures"),
-                          
+
                           DT::dataTableOutput("mirnaSeqswithplots")
-                          
+
                  ),
-                 
-                 
-                 
+
+
+
                  tabPanel(title = 'Expression Plots',
                           # Horizontal line ----
                           tags$hr(),
                           h1("smallRNA-seq counts"),
-                          
+
                           DT::dataTableOutput("PLOTS"),
-                          
+
                           fluidRow(title = "Expression Plots",
                                    uiOutput("plotouput")
                           )
-                          
+
                  ),
-                 
-                 
+
+
                  tabPanel(title = 'Homology',
                           # Horizontal line ----
                           tags$hr(),
                           h1("Alignments"),
-                          
+
                           DT::dataTableOutput('alignmentsoutput'),
                           hr(),
                           h4("Alignments:"),
@@ -212,8 +212,8 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                           # Horizontal line ----
                           tags$hr(),
                           h1("Alignments"),
-                          
-                          DT::dataTableOutput('Intergartiontable'),  
+
+                          DT::dataTableOutput('Intergartiontable'),
                           hr(),
                           fluidRow(
                             column(width = 12, tableOutput("wsf"),
@@ -243,14 +243,13 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                           h1("Score Stats"),
                           fluidRow(column(8,align="center",
                                           plotOutput('Scoreshistogram',  width = "80%"))),
-                          
+
                           fluidRow(column(8,align="center",
                                           plotOutput('ScoreBoxplots1',  width = "60%"))),
-                          
+
                           fluidRow(column(8,align="center",
                                           plotOutput('ScoreBoxplots2',  width = "60%")))
-                          
-                          
+
+
                  )
 )
-
