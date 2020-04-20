@@ -73,6 +73,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               tags$hr(),
                               actionButton("Homology", "5- Conservation"),
                               tags$hr(),
+                              numericInput("threshold", "Score threshold:", 3.75, min = -100, max = 100, step=0.05,width="30%"),
                               actionButton("ButtonIntegrate", "6- Intergrate")
                               #tags$hr(),
                               #bookmarkButton()
@@ -144,8 +145,8 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                               fluidRow(
                                 column(6,
                                        h4("7- Give us feedback"),
-                                       h5("guillemyllabou@ufl.edu"),
-                                       h5("tianyuan.liu@ufl.edu")
+                                       h5("guillemyllabou-at-gmail-dot-com"),
+                                       h5("tianyuan.liu-at-ufl-dot-edu")
                                 ),
                                 column(6,
                                        h4("Animal / Plant "),
