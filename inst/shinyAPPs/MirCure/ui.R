@@ -39,7 +39,7 @@ ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
                               # Horizontal line ----
                               #tags$hr(),
                               radioButtons("matureorarm", "Are you uploading mature/star sequences or 5p/3p ?",
-                                           c("Mature/Star" = "maturestar","5p/3p" = "arm5p3p" )),
+                                           c("5p/3p" = "arm5p3p" ,"Mature/Star" = "maturestar"), selected = "arm5p3p"),
 
 
                               numericInput("extrabases", "Precursor flanking bases to retrieve:", 11, min = 0, max = 20,width="30%"),
