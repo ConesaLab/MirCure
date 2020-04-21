@@ -1389,7 +1389,7 @@ server <- function(input, output, session) {
         ## make sure mature reads is the largest!!!
         matureCounts[i] <- round(matureReads)
         starCounts[i] <- round(starReads)
-        loopCounts[i] <- loopReads
+        loopCounts[i] <- round(loopReads,2)
         ######check the mountain-like structure#########
 
         #########Give the score For expression############################
