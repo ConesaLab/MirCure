@@ -1,6 +1,6 @@
 # Define UI for dataset viewer app ----
 library("shinythemes")
-ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
+ui <- navbarPage("MirCure",theme = shinytheme("flatly"),
 
                  tabPanel(title='Load Data',
                           sidebarLayout(

@@ -53,10 +53,6 @@ ExpLevel2<<-100 #minim reads
 ExpLevel2_pointsAnimal<<-2
 ExpLevel2_pointsPlant<<-6
 
-#more reads than ExpLevel3
-ExpLevel3<<-100 #minim reads
-ExpLevel3_pointsAnimal<<-2.5
-ExpLevel3_pointsPlant<<-8
 
 #Too many reads in loop has a penalty
 loopreadthreshold<<-0.1  #if loop contains more than X% of the pre-miRNA reads
@@ -116,6 +112,7 @@ server <- function(input, output, session) {
 
   values$successStep1<-FALSE
   values$successStep2<-FALSE
+  values$successStepAdjust<-FALSE
   values$successStep3<-FALSE
   values$successStep4<-FALSE
   values$successStep5<-FALSE
@@ -1282,7 +1279,7 @@ server <- function(input, output, session) {
       errorClass =  showNotification("Missing succesful Step 1", type= "error")
     )
     shiny::validate(
-      need( values$finalStarPosition==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
+      need( values$successStepAdjust==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
       errorClass =  showNotification("Missing succesful Step 3:fold seqs", type= "error")
     )
     Score_expression_animal<-rep(0, nrow(mirnadf)) # set all scores to zero
@@ -1390,8 +1387,8 @@ server <- function(input, output, session) {
         }
 
         ## make sure mature reads is the largest!!!
-        matureCounts[i] <- matureReads
-        starCounts[i] <- starReads
+        matureCounts[i] <- round(matureReads)
+        starCounts[i] <- round(starReads)
         loopCounts[i] <- loopReads
         ######check the mountain-like structure#########
 
