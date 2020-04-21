@@ -71,8 +71,8 @@ Score_conservation_6_20id20_Animal<<-1
 Score_conservation_6_20id20_Plant<<-2
 
 #### 2-5 miRNAs identicals, + similar (same seed) >20
-Score_conservation_2_5id20_Animal<<-0.75
-Score_conservation_2_5id20_Plant<<-1.5
+# Score_conservation_2_5id20_Animal<<-0.75
+# Score_conservation_2_5id20_Plant<<-1.5
 
 #### 6-20 miRNAs identicals, + similar (same seed) <20
 Score_conservation_6_20id_Animal<<-0.5
