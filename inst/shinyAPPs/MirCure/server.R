@@ -25,7 +25,7 @@ options(shiny.maxRequestSize = 10000*1024^2)
 ##############################################
 ############ Score definition ################
 ##############################################
-## Overhang scores values (applys to bot, priRNA and loop cleavage)
+## Overhang scores
 perfectmatch_animal<<-1
 acceptable_animal<<-0.75
 suspicious_animal<<-0.5
@@ -136,11 +136,8 @@ server <- function(input, output, session) {
   output$precs <- renderTable({
     req(input$precs)
     precsdf <- readGFF(input$precs$datapath)
-    #precsdf <- read.table("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_precursor.gff3")
-    precsdf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNApre.gff3")
-    #precsdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Conserved_Precursors.gff3")
-    #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/precursorGFF3.gff3")
-    #precsdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNApre_short.gff3")
+    #precsdf <- read.table("")
+
 
     return(head(precsdf))
   })
@@ -149,10 +146,8 @@ server <- function(input, output, session) {
   output$mature <- renderTable({
     req(input$mature)
     matdf <- readGFF(input$mature$datapath)
-    #matdf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_mature.gff3")
-    matdf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNA5p.gff3")
-    #matdf <- readGFF("/home/guillem/Documents/mirQCApp/mousedata/matureGFF3.gff3")
-    #matdf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA5P_short.gff3")
+    #matdf <- readGFF("")
+
 
     return(head(matdf))
   })
@@ -161,10 +156,7 @@ server <- function(input, output, session) {
   output$star <- renderTable({
     req(input$star)
     stardf <- readGFF(input$star$datapath)
-    #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/Zma_cons_star.gff3")
-    #stardf <- readGFF("/home/guillemyllabou/Documents/mirPlot_Shiny/v0/data/bger/Bger_stars.gff3")
-    stardf <<- readGFF("/Users/liutianyuan/Desktop/Adjust\ New\ Version/miRNA3p.gff3")
-    #stardf <- readGFF("/home/guillem/Documents/mirQCApp/humandata/miRNA3P_short.gff3")
+    #stardf <- readGFF(")
     return(head(stardf))
   })
 
