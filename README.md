@@ -8,6 +8,6 @@
 ```
 library(devtools)
 install_github("guillemylla/MirCureApp")
-library("MirCureApp")
+library("MirCure")
 runMirCure()
 ```
