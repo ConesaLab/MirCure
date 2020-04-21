@@ -1,10 +1,8 @@
 # Define server logic to summarize and view selected dataset ----
-#install.packages("LncFinder", lib="/ufrc/conesa/guillemyllabou/R_libs")
-#install.packages("shinyFiles", lib="/ufrc/conesa/guillemyllabou/R_libs")
 
-###### In cluster, activate:
+###### In cluster, activate viennarna module.
 #system("module load viennarna")
-#.libPaths(  "/ufrc/conesa/guillemyllabou/R_libs" )
+
 ######
 library("GenomicAlignments")
 library("Biostrings")
@@ -576,7 +574,7 @@ server <- function(input, output, session) {
       for (i in 1:nrow(mirnadf)){
 
 
-        #incProgress(1/q, detail = paste0("May take a long time ... ", i, " of ", q))
+        incProgress(1/q, detail = paste0("May take a long time ... ", i, " of ", q))
         #if (!str_count(mirnadf$precursor[i], "N") > 20){## if miRNA precursorcontains > 20 Ns
 
 
@@ -1257,7 +1255,7 @@ server <- function(input, output, session) {
         ##################I should use it##############################
 
 
-        #incProgress(1/n, detail = paste("Prec", i, "of", n))
+        incProgress(1/n, detail = paste("Prec", i, "of", n))
 
 
       }# close loop for each prec
