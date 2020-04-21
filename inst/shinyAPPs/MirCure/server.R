@@ -258,8 +258,7 @@ server <- function(input, output, session) {
     starseqs <<- getSeq(genomefasta,GRanges(stardf$seqid,IRanges(start=as.numeric(stardf$start),end=as.numeric(stardf$end)),strand =precsdf$strand ))
     ##########
 
-    #extrabases<<-15
-
+    #extrabases<<-11
     extrabases<<-input$extrabases
 
     precsdf_adjusted<-precsdf
@@ -311,9 +310,9 @@ server <- function(input, output, session) {
 
 
   })## clsose button seqs
-  ##############################################
-  ################# check annotation  ################
-  ##############################################
+  #################################
+  ##### Check arms annotation #####
+  #################################
 
   ### select genome
   ##if selected
@@ -356,8 +355,7 @@ server <- function(input, output, session) {
 
       incProgress(1/n, detail = "Loading bam")
 
-      #alignment <<- readGAlignments("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/bamfiles/all12_sort.bam")
-      #alignment <<-  readGAlignments("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/bamfiles/test.bam")
+      #alignment <<- readGAlignments(".bam")
 
        alignment <<- readGAlignments(values$bamfilepath)
 
@@ -418,10 +416,7 @@ server <- function(input, output, session) {
 
 
 
-
-        #
-
-        ##############correct the annotation based on the expression ###################
+        ##############correct  annotation based on the expression
 
 
         starReads <- mean(selectedRange_coverage[star_i:star_e]) # average reads in the previous annotation
@@ -514,21 +509,24 @@ server <- function(input, output, session) {
 
 
     })
-
+    values$successStepAdjust<-TRUE
   })# clos button expression PLOTS
 
-  ###########################################################################
-  #                                                                         #
-  #  check fold sequence, and find the best structure for miRNA candidates  #
-  #                                                                         #
-  #                                                                         #
-  ###########################################################################
+                                                                    #
+  #################################
+  ### Check secondary structure ###
+  #################################
+
   observeEvent(input$ButtonFold, {
 
-    ################ Checks if previous step was succesdul
+    ################ Checks if previous step was successful
     shiny::validate(
-      need( values$successStep1==TRUE, message = ('Missing succesful Step 1')),
-      errorClass =  showNotification("Missing succesful Step 1", type= "error")
+      need( values$successStep1==TRUE, message = ('Missing successful Step 1')),
+      errorClass =  showNotification("Missing successful Step 1", type= "error")
+    )
+    shiny::validate(
+      need( values$successStepAdjust==TRUE, message = ('Missing successful Step 2')),
+      errorClass =  showNotification("Missing successful Step 2", type= "error")
     )
 
     #### requires Vienna, downalaod from https://www.tbi.univie.ac.at/RNA/index.html#download
@@ -562,7 +560,7 @@ server <- function(input, output, session) {
 
 
         #folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", detectCores(all.tests = FALSE, logical = TRUE))
-        folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= 4)#detectCores(all.tests = FALSE, logical = TRUE))
+        folded=run_RNAfold(as.character(mirnadf$precseqs_extended[i]), RNAfold.path = "RNAfold", parallel.cores= ifelse(detectCores(all.tests = FALSE, logical = TRUE)-1 <1,1, detectCores(all.tests = FALSE, logical = TRUE)-1))#Use all available cores minus 1, if only 1, use 1.
 
         coord=ct2coord(makeCt(folded[2,], folded[1,]))
 
@@ -1238,7 +1236,7 @@ server <- function(input, output, session) {
         ##################I should use it##############################
 
 
-        incProgress(1/n, detail = paste("Prec", i, "of", n))
+        incProgress(1/q, detail = paste("Prec", i, "of", q))
 
 
       }# close loop for each prec
@@ -1283,6 +1281,10 @@ server <- function(input, output, session) {
       need( values$successStep1==TRUE, message = ('Missing succesful Step 1')),
       errorClass =  showNotification("Missing succesful Step 1", type= "error")
     )
+    shiny::validate(
+      need( values$finalStarPosition==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
+      errorClass =  showNotification("Missing succesful Step 3:fold seqs", type= "error")
+    )
     Score_expression_animal<-rep(0, nrow(mirnadf)) # set all scores to zero
     Score_expression_plant<-rep(0, nrow(mirnadf)) # set all scores to zero
     withProgress(message = 'calculating Expression...', value = 0, {
@@ -1299,7 +1301,7 @@ server <- function(input, output, session) {
       reason <- c()
 
       for(i in 1 : nrow(mirnadf) ) {
-        #incProgress(1/q, detail = paste("Plot", i, "of", q))
+        incProgress(1/q, detail = paste("Plot", i, "of", q))
         ##convert in GRanges
         mirname=mirnadf$ID[i]
 
