@@ -1841,7 +1841,7 @@ server <- function(input, output, session) {
           pageLength = 5
         )
       )
-    }else{## if mature/star was computed in mirplot
+    }else{## if mature/star was computed in MirCure
 
       res_v2<-cbind(res[,1:5], maturesvector[,3], res[ , -1:-5]  )
       colnames(res_v2)[4]<-"5p Arm"
@@ -2042,7 +2042,7 @@ server <- function(input, output, session) {
 
         }
       })
-      showNotification("Done. Your report is in the \"./mirPlot/report\"file", type= "message")
+      showNotification("Done. Your report is in the \"./MirCure/report\"file", type= "message")
 
     })
 
