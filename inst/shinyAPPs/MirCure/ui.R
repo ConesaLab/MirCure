@@ -1,6 +1,6 @@
 # Define UI for dataset viewer app ----
 library("shinythemes")
-ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
+ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
 
                  tabPanel(title='Load Data',
                           sidebarLayout(
@@ -82,7 +82,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
 
                             # Main panel for displaying outputs ----
                             mainPanel(
-                              h1("Welcome to mirExpert"),
+                              h1("MirCure"),
 
                               fluidRow(
                                 column(6,
@@ -95,22 +95,22 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
                                 ),
                                 column(6,
                                        h4("1- get Sequences"),
-                                       h5("~ mirExpert takes the information about the miRNA sequence from genome (using the provided gff3)."),
+                                       h5("~ MirCure takes the information about the miRNA sequence from genome (using the provided gff3)."),
                                        h5("~ Extends the precursor # bases in each extreme in order to allow a correct folding.")
                                 )
                               ),
                               fluidRow(
                                 column(6,
                                        h4("2- Adjust the annotation"),
-                                       h5("~ mirExpert reads the .bam file and adjusts the annotation according to the expression evidence."),
-                                       h5("~ mirExpert also saves the previous annotation and compare the final score with the adjust one."),
-                                       h5("~  mirExpert would report the structure with a high final score."),
+                                       h5("~ MirCure reads the .bam file and adjusts the annotation according to the expression evidence."),
+                                       h5("~ MirCure also saves the previous annotation and compare the final score with the adjust one."),
+                                       h5("~  MirCure would report the structure with a high final score."),
                                        img(src="/appfigs/adjust_annotation.png" ,width="350" , height="300")
 
                                 ),
                                 column(6,
                                        h4("3- Fold sequences"),
-                                       h5("~ mirExpert calculates the secondary structure of the extended precursor"),
+                                       h5("~ MirCure calculates the secondary structure of the extended precursor"),
                                        h5("~ Colors the mature miRNA (red) and star (blue)."),
                                        h5("~ miRNAs should display a hairpin structure"),
                                        h5("~ Mature & star secuences should display a 2nts overhang on both extremes."),
@@ -128,7 +128,7 @@ ui <- navbarPage("mirExpert v2",theme = shinytheme("flatly"),
 
                                 column(6,
                                        h4("5- Conservation"),
-                                       h5("~ mirExpert takes the mature seqeucne and aligns against miRBase"),
+                                       h5("~ MirCure takes the mature seqeucne and aligns against miRBase"),
                                        h5("~ Report the alignments (max. 15)"),
                                        h6("~ Score depends on the number of hits. Max=3 "),
                                        img(src="/appfigs/alignments.png" ,width="400" , height="350")

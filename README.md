@@ -1,4 +1,4 @@
-# MirQC; Quality control and curation of microRNAs
+# MirCure; Quality control and curation of microRNAs
 
 - Guillem Ylla (guillem_ylla [at] fas [dot] harvard [dot] edu )
 - Tianyuan Liu
@@ -7,7 +7,7 @@
 
 ```
 library(devtools)
-install_github("guillemylla/mirQCApp")
+install_github("guillemylla/mirCureApp")
 library("mirQCApp")
-runMirPlot()
+runMirCure()
 ```

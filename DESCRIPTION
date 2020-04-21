@@ -1,4 +1,4 @@
-Package: mirQCApp
+Package: MirCure
 Type: Package
 Title: A tool for quality control and filtering of microRNAs
 Version: 0.1.0
