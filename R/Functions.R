@@ -34,7 +34,7 @@ For Windows machines, run the .exe file that you will find at: \n", print( Vienn
 
   appDir <- system.file("shinyAPPs", "MirCure",package = "MirCure")
   if (appDir == "") {
-    stop("Could not find example directory. Try re-installing `MirCure`.", call. = FALSE)
+    stop("Could not find shinyAPPs/MirCure directory. Try re-installing `MirCure`.", call. = FALSE)
   }
 
   shiny::runApp(appDir, display.mode = "normal")
