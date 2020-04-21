@@ -87,40 +87,42 @@ ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
                               fluidRow(
                                 column(6,
                                        h4("0 - Load candidate miRNA annotations"),
-                                       h5("~ Upload the genome file (.fa)."),
-                                       h5("~ The miRNA precursor annotations* (.gff3)."),
-                                       h5("~ The miRNA mature annotations* (.gff3)."),
-                                       h5("~ The miRNA star annotations* (.gff3)."),
+                                       tags$li(" Upload the genome file (.fa)."),
+                                       tags$li(" The miRNA precursor annotations* (.gff3)."),
+                                       tags$li(" The miRNA mature annotations* (.gff3)."),
+                                       tags$li(" The miRNA star annotations* (.gff3)."),
                                        h6("* All gff3 entries must be in the same order.")
                                 ),
                                 column(6,
-                                       h4("1- get Sequences"),
-                                       h5("~ MirCure takes the information about the miRNA sequence from genome (using the provided gff3)."),
-                                       h5("~ Extends the precursor # bases in each extreme in order to allow a correct folding.")
+
+                                       h4("1- Get Sequences") ,
+                                       tags$li(" MirCure takes the information about the miRNA sequence from genome (using the provided gff3)."),
+                                       tags$li(" Extends the precursor # bases in each extreme in order to allow a correct folding.")
+
                                 )
                               ),
                               fluidRow(
                                 column(6,
                                        h4("2- Adjust the annotation"),
-                                       h5("~ MirCure reads the .bam file and adjusts the annotation according to the expression evidence."),
-                                       h5("~ MirCure also saves the previous annotation and compare the final score with the adjust one."),
-                                       h5("~  MirCure would report the structure with a high final score."),
+                                       tags$li(" MirCure reads the .bam file and adjusts the annotation according to the expression evidence."),
+                                       tags$li(" MirCure also saves the previous annotation and compare the final score with the adjust one."),
+                                       tags$li("  MirCure would report the structure with a high final score."),
                                        img(src="/appfigs/adjust_annotation.png" ,width="350" , height="300")
 
                                 ),
                                 column(6,
                                        h4("3- Fold sequences"),
-                                       h5("~ MirCure calculates the secondary structure of the extended precursor"),
-                                       h5("~ Colors the mature miRNA (red) and star (blue)."),
-                                       h5("~ miRNAs should display a hairpin structure"),
-                                       h5("~ Mature & star secuences should display a 2nts overhang on both extremes."),
+                                       tags$li(" MirCure calculates the secondary structure of the extended precursor"),
+                                       tags$li(" Colors the mature miRNA (red) and star (blue)."),
+                                       tags$li(" miRNAs should display a hairpin structure"),
+                                       tags$li(" Mature & star secuences should display a 2nts overhang on both extremes."),
                                        h6("~ Score per each extreme: 5 pts= perfect / 3pts = semi-good (3nts overhang)"),
                                        img(src="/appfigs/Bge-Mir-1_pre_fold.jpg" ,width="350" , height="300")
                                 ),
                                 column(6,
                                        h4("4- Calculate expression"),
-                                       h5("~ After uploading a BAM file with small RNA-seq reads against a genome, caclulate expression of mature/star/prec"),
-                                       h5("~ Creates a bar plot in which for each nt of the precursor shows the number of mapped reads"),
+                                       tags$li(" After uploading a BAM file with small RNA-seq reads against a genome, caclulate expression of mature/star/prec"),
+                                       tags$li(" Creates a bar plot in which for each nt of the precursor shows the number of mapped reads"),
                                        h6("~ Score: > 2 reads in mature = +3 pts // >2 reads in star = +3pts")
                                 )
                               ),
@@ -128,17 +130,17 @@ ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
 
                                 column(6,
                                        h4("5- Conservation"),
-                                       h5("~ MirCure takes the mature seqeucne and aligns against miRBase"),
-                                       h5("~ Report the alignments (max. 15)"),
+                                       tags$li(" MirCure takes the mature seqeucne and aligns against miRBase"),
+                                       tags$li(" Report the alignments (max. 15)"),
                                        h6("~ Score depends on the number of hits. Max=3 "),
                                        img(src="/appfigs/alignments.png" ,width="400" , height="350")
 
                                 ),
                                 column(6,
                                        h4("6- Integrate"),
-                                       h5("~ Integrates all the info in a single table"),
-                                       h5("~ Select all candidates you want to accept as real miRNAs (pre-selected > 8pts)"),
-                                       h5("~ Download selected miRNAs")
+                                       tags$li(" Integrates all the info in a single table"),
+                                       tags$li(" Select all candidates you want to accept as real miRNAs (pre-selected > 8pts)"),
+                                       tags$li(" Download selected miRNAs")
                                 )
                               ),
 
@@ -150,9 +152,9 @@ ui <- navbarPage("MirCure v2",theme = shinytheme("flatly"),
                                 ),
                                 column(6,
                                        h4("Animal / Plant "),
-                                       h5("~ Modifies score system"),
-                                       h5("~ Animal loop length should be shorter than plants"),
-                                       h5("~ In plants it is important to find it conserved, otherwise could be a siRNA")
+                                       tags$li(" Modifies score system"),
+                                       tags$li(" Animal loop length should be shorter than plants"),
+                                       tags$li(" In plants it is important to find it conserved, otherwise could be a siRNA")
 
                                 )
                               )
