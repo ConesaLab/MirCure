@@ -7,7 +7,7 @@
 
 ```
 library(devtools)
-install_github("guillemylla/mirCureApp")
+install_github("guillemylla/MirCureApp")
 library("MirCureApp")
 runMirCure()
 ```
