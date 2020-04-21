@@ -176,12 +176,11 @@ server <- function(input, output, session) {
       print("arm5p3p")}
   })
 
-  ##############################################
-  ################# Get sequences      ##########
-  ##############################################
+  #################################
+  ######### Get sequences #########
+  #################################
 
   ### select genome
-
   ##if uploaded
   observeEvent(input$genome0, {
     values$genomefile<<-input$genome0$datapath
@@ -218,15 +217,7 @@ server <- function(input, output, session) {
     )
 
 
-    ###################
-    ###Processing....
-
-    #genomefasta <- FaFile(paste("data/genomes","zma.AGPv4.full.fasta", sep="/"))
-    #genomefasta <- FaFile(paste("data/genomes","Bgermanica.scaffolds.fa", sep="/"))
-    #genomefasta <- FaFile(paste("data/genomes","mmu.fa", sep="/"))
-    #genomefasta <- FaFile(paste("/Library/Frameworks/R.framework/Versions/3.6/Resources/library/mirQCApp/shinyAPPs/mirPlot/data/genomes",'humanGenome', sep="/"))
-
-
+    #genomefasta <- FaFile(paste("data/genomes","genome.fasta", sep="/"))
     genomefasta <- FaFile(values$genomefile)
 
     precsdf <<- try(readGFF(input$precs$datapath) )
