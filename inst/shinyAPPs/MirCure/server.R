@@ -1401,8 +1401,8 @@ server <- function(input, output, session) {
             scoreExpression <- c(2.5)
           } else if (starReads > ExpLevel1 & matureReads > ExpLevel1) {
             scoreExpression <- c (2)
-          } else if (starReads > ExpLevel1 & matureReads > ExpLevel2) {
-            scoreExpression <- c (2)
+          # } else if (starReads > ExpLevel1 & matureReads > ExpLevel2) {
+          #   scoreExpression <- c (2)
           } else {
             scoreExpression <- c(0)
           }
