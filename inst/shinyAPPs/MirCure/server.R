@@ -1875,12 +1875,6 @@ server <- function(input, output, session) {
 
     }
 
-    # print the values of inputs
-    shinyValueCheckBOX = function(id, len) {
-      unlist(lapply(seq_len(len), function(i) {
-        value = input[[paste0(id, i)]]
-        if (is.null(value)) NA else value
-      })) }
 
     # print the values of inputs
     shinyValue = function(id, len) {
@@ -1944,7 +1938,7 @@ server <- function(input, output, session) {
         Selectiondatframe<<-NULL
         #T2nd we get the info o fthe items that user modified
         Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                        v2 = shinyValueCheckBOX('v2_', nrow(mirnadf_integrated)))
+                                        v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
         Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
 
         # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
@@ -1977,7 +1971,7 @@ server <- function(input, output, session) {
         #T2nd we get the info o fthe items that user modified
         Selectiondatframe<<-NULL
         Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                        v2 = shinyValueCheckBOX('v2_', nrow(mirnadf_integrated)))
+                                        v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
         print("Selectiondatframe")
         print(Selectiondatframe)
         Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
@@ -1992,9 +1986,6 @@ server <- function(input, output, session) {
           }
         }
 
-        # Todownload<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
-        # Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
-        # write.csv(Todownload, file, row.names = FALSE)
 
          if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
 
@@ -2004,19 +1995,11 @@ server <- function(input, output, session) {
            write(Todownloadasfasta, file )
 
         }else{  ### if input was 5p / 3p
-            print("maturesvector")
-            print(maturesvector)
             ## maturesvector$matureis
             ### check if mature is 5p or 3p and return mature!
             Todownload_0<<-cbind(mirnadf_integrated,Selectiondatframe, matureis=maturesvector$matureis )
-            print("Todownload_0")
-            print(Todownload_0)
             Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,12,14 )]
-            print("Todownload_1")
-            print(Todownload_1)
-            Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1[,1],"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
-            print("Todownloadasfasta2")
-            print(Todownloadasfasta2)
+            Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1$v1,"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
             #Todownloadasfasta<-paste0(">",Todownload[,1],"\n",Todownload[,3])
             write(Todownloadasfasta2, file )
 
@@ -2042,7 +2025,28 @@ server <- function(input, output, session) {
     output$downloadALL <- downloadHandler(
       filename = "MirCure_All_data.txt",
       content = function(file3) {
-        write.csv(toreturnall, file3 )
+        ## first, get the pre-select  rows
+        originalstatus<- data.frame(v1 = res_globalcopie$Name ,
+                                    v2 = res_globalcopie$Score )
+        # originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
+        # originalstatus<<-originalstatus
+        #T2nd we get the info o fthe items that user modified
+        Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
+                                        v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
+        Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
+
+        # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
+        for(i in 1:nrow(Selectiondatframe)){
+          if(is.na(Selectiondatframe[i,1])){
+            Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
+          }
+          if(is.na(Selectiondatframe[i,2])){
+            Selectiondatframe[i,2]<-originalstatus[i,2]
+          }
+        }
+
+        toreturnall2<-cbind(UserName=Selectiondatframe$v1,toreturnall)
+        write.csv(toreturnall2, file3 )
       }#content end
     )##end download ALL handler
     ## Download PDF report
