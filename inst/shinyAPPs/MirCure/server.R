@@ -1279,9 +1279,14 @@ server <- function(input, output, session) {
       errorClass =  showNotification("Missing succesful Step 1", type= "error")
     )
     shiny::validate(
-      need( values$successStepAdjust==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
-      errorClass =  showNotification("Missing succesful Step 3:fold seqs", type= "error")
+      need( values$successStepAdjust==TRUE, message = ('Missing succesful Step 2: Adjust structure ')),
+      errorClass =  showNotification("Missing succesful Step 2: Adjust structure ", type= "error")
     )
+    shiny::validate(
+      need( values$successStep2==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
+      errorClass =  showNotification("Missing succesful Step 2: Folding seq", type= "error")
+    )
+
     Score_expression_animal<-rep(0, nrow(mirnadf)) # set all scores to zero
     Score_expression_plant<-rep(0, nrow(mirnadf)) # set all scores to zero
     withProgress(message = 'calculating Expression...', value = 0, {
