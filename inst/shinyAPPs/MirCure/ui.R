@@ -238,7 +238,8 @@ ui <- navbarPage("MirCure",theme = shinytheme("flatly"),
                           downloadButton("downloadData", "Download Selected (.csv)"),
                           downloadButton("downloadMatures", "Download Matures (.fa)"),
                           downloadButton("downloadALL", "Download ALL data (csv)"),
-                          actionButton("report", "Download the report (pdf)")
+                          actionButton("report", "Download the report (pdf)*"),
+                          p("*Requires pdflatex")
                  ),
                  tabPanel(title = 'Score stats',
                           # Horizontal line ----

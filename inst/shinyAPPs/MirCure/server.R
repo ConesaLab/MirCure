@@ -1832,16 +1832,7 @@ server <- function(input, output, session) {
     ##### SET score threshold!
     #####
     ## pre-check some rows absed on their score
-    NewName0<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_ID\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
-    #res$NewName<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_1\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
-    print("NewName0")
-    print(NewName0)
-    Newname1<-NULL
-    for(i in 1:length(NewName0)) { Newname1<-c(Newname1, gsub("ID", i, NewName0[i]) )  }
-    print("Newname1")
-    print(Newname1)
-    res$NewName<-Newname1
-    print(res$NewName)
+    res$NewName<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_1\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
     res[res$Score>=scorethreshold,]$Filter<- gsub('\"checkbox\"/>\n', '\"checkbox\" checked=\"checked\"/>\n',  res[res$Score>=scorethreshold,]$Filter )
     ####
     res_globalcopie<<-res
@@ -1875,23 +1866,13 @@ server <- function(input, output, session) {
 
     }
 
-
     # print the values of inputs
     shinyValue = function(id, len) {
-      print(input)
-      print('input[["v1_1"]]')
-      print(input[["v1_1"]])
-      print('input[["v1_2"]]')
-      print(input[["v1_2"]])
-      print('input[["v1_3"]]')
-      print(input[["v1_3"]])
-
       unlist(lapply(seq_len(len), function(i) {
         value = input[[paste0(id, i)]]
-        print(value)
-        print(paste("id ", id))
         if (is.null(value)) NA else value
       })) }
+
 
     ###############
     ### react on selecting rows (Not in checkbox)
@@ -1952,7 +1933,7 @@ server <- function(input, output, session) {
         }
 
         Todownload<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
-        Todownload<<-cbind(UserName=Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
+        Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
         write.csv(Todownload, file, row.names = FALSE)
       }
     )
@@ -1964,10 +1945,11 @@ server <- function(input, output, session) {
       filename = "Maturesafterfilter.fa",
       content = function(file) {
         ## first, get the pre-select  rows
+        originalstatus<-NULL
         originalstatus<- data.frame(v1 = res_globalcopie$Name ,
                                     v2 = res_globalcopie$Score )
-        originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
-        originalstatus<<-originalstatus
+        #originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
+        #originalstatus<<-originalstatus
         #T2nd we get the info o fthe items that user modified
         Selectiondatframe<<-NULL
         Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
@@ -1986,6 +1968,9 @@ server <- function(input, output, session) {
           }
         }
 
+        # Todownload<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
+        # Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
+        # write.csv(Todownload, file, row.names = FALSE)
 
          if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
 
@@ -1995,11 +1980,19 @@ server <- function(input, output, session) {
            write(Todownloadasfasta, file )
 
         }else{  ### if input was 5p / 3p
+            print("maturesvector")
+            print(maturesvector)
             ## maturesvector$matureis
             ### check if mature is 5p or 3p and return mature!
             Todownload_0<<-cbind(mirnadf_integrated,Selectiondatframe, matureis=maturesvector$matureis )
+            print("Todownload_0")
+            print(Todownload_0)
             Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,12,14 )]
-            Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1$v1,"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
+            print("Todownload_1")
+            print(Todownload_1)
+            Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1[,1],"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
+            print("Todownloadasfasta2")
+            print(Todownloadasfasta2)
             #Todownloadasfasta<-paste0(">",Todownload[,1],"\n",Todownload[,3])
             write(Todownloadasfasta2, file )
 
@@ -2025,28 +2018,7 @@ server <- function(input, output, session) {
     output$downloadALL <- downloadHandler(
       filename = "MirCure_All_data.txt",
       content = function(file3) {
-        ## first, get the pre-select  rows
-        originalstatus<- data.frame(v1 = res_globalcopie$Name ,
-                                    v2 = res_globalcopie$Score )
-        # originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
-        # originalstatus<<-originalstatus
-        #T2nd we get the info o fthe items that user modified
-        Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                        v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
-        Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
-
-        # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
-        for(i in 1:nrow(Selectiondatframe)){
-          if(is.na(Selectiondatframe[i,1])){
-            Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
-          }
-          if(is.na(Selectiondatframe[i,2])){
-            Selectiondatframe[i,2]<-originalstatus[i,2]
-          }
-        }
-
-        toreturnall2<-cbind(UserName=Selectiondatframe$v1,toreturnall)
-        write.csv(toreturnall2, file3 )
+        write.csv(toreturnall, file3 )
       }#content end
     )##end download ALL handler
     ## Download PDF report

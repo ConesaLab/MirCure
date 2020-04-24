@@ -22,4 +22,6 @@ Imports:
 	shiny,
 	shinyFiles,
 	shinythemes,
-	stringr
+	stringr,
+	jpeg,
+	png
