@@ -6,38 +6,49 @@ output:
 ---
 
 
-### Sequence Name:
+### Original Name:
 ```{r,echo = FALSE,comment=NA }
-writeLines( as.character(ToReport[i,"ID"]))
+writeLines( as.character(ToReport[i,"Name"]))
+
 ```
+
+### User provided Name:
+```{r,echo = FALSE,comment=NA }
+writeLines( as.character(ToReport[i,"UserName"]))
+```
+
 
 ### Mature/5p sequence:
 ```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"ID"],]$`5p arm`))
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`5p arm`))
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`mature`))
+
 ```
 
 ### Star/3p sequence:
 ```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"ID"],]$`3p arm`))
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`3p arm`))
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`star`))
+
 ```
 
 ### Genomic coordinates:
 ```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$Loci))
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Loci))
 ```
 
 ### Which arm is mature arm:
 ```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$whoismature))
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$whoismature))
 ```
 ### Final score:
 ```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$Score))
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Score))
 ```
 ### Structure plot:
 ```{r,echo = FALSE,comment=NA }
 library("jpeg")
-im <- readJPEG(paste0('./www/images/', ToReport[i,"ID"], "_fold.jpg"))
+im <- readJPEG(paste0('./www/images/', ToReport[i,"Name"], "_fold.jpg"))
 plot (0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
 rasterImage (im, 0, 0, 1, 1)
 ```
@@ -45,7 +56,7 @@ rasterImage (im, 0, 0, 1, 1)
 ### Expression plot:
 ```{r,echo = FALSE,comment=NA }
 library("png")
-png <- readPNG(paste0('./www/plots/', ToReport[i,"ID"], ".png"))
+png <- readPNG(paste0('./www/plots/', ToReport[i,"Name"], ".png"))
 plot.new()
 rasterImage(png, 0, 0, 1, 1)
 ```

@@ -2031,16 +2031,40 @@ server <- function(input, output, session) {
 
 
     observeEvent (input$report, {
+
+              ## first, get the pre-select  rows
+              originalstatus<- data.frame(v1 = res_globalcopie$Name ,
+                                          v2 = res_globalcopie$Score )
+              originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
+              originalstatus<<-originalstatus
+              Selectiondatframe<<-NULL
+              #T2nd we get the info o fthe items that user modified
+              Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
+                                              v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
+              Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
+
+              # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
+              for(i in 1:nrow(Selectiondatframe)){
+                if(is.na(Selectiondatframe[i,1])){
+                  Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
+                }
+                if(is.na(Selectiondatframe[i,2])){
+                  Selectiondatframe[i,2]<-originalstatus[i,2]
+                }
+              }
+
+              ToReport<<-cbind(UserName=Selectiondatframe$v1,res_globalcopie)
+
       print("creating report")
       withProgress(message = 'Creating report...', value = 0, {
-        n <- length(as.character(res_globalcopie$ID))
-        print("res_globalcopie$ID")
-        print(res_globalcopie$ID)
-        for (i in as.character(res_globalcopie$ID)) {
-          print(i)
-          render("./report.Rmd", output_file = paste0 ("/home/ysland/Documents/MirCureApp/inst/shinyAPPs/MirCure/report/report_", i, ".pdf"),
-                 params = list(new_title = paste ("report of ", i)))
-          incProgress(1/n, detail = paste("report for", i))
+        n <- length(as.character(ToReport$ID))
+        print("ToReport$ID")
+        print(ToReport$ID)
+        for (i in 1:nrow(ToReport)) {
+          print(ToReport[i,])
+          render("./Makereport.Rmd", output_file = paste0 ("reports/report_", ToReport[i,"ID"], ".pdf"),
+                 params = list(new_title = paste ("report of ", ToReport[i,])))
+          incProgress(1/n, detail = paste("report for", ToReport[i,"Name"]))
 
         }
       })
