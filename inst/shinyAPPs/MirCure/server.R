@@ -1943,28 +1943,27 @@ server <- function(input, output, session) {
     output$downloadMatures <- downloadHandler(
       filename = "Maturesafterfilter.fa",
       content = function(file) {
-        if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
+        ## first, get the pre-select  rows
+        originalstatus<<- data.frame(v1 = res_globalcopie$Name ,
+                                     v2 = res_globalcopie$Score )
+        originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
 
-          ## first, get the pre-select  rows
-          originalstatus<<- data.frame(v1 = res_globalcopie$Name ,
-                                       v2 = res_globalcopie$Score )
-          originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
+        #T2nd we get the info o fthe items that user modified
+        Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
+                                        v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
+        Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
 
-          #T2nd we get the info o fthe items that user modified
-          Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                          v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
-          Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
+        # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
+        for(i in 1:nrow(Selectiondatframe)){
+          if(is.na(Selectiondatframe[i,1])){
+            Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
 
-          # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
-          for(i in 1:nrow(Selectiondatframe)){
-            if(is.na(Selectiondatframe[i,1])){
-              Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
-
-            }
-            if(is.na(Selectiondatframe[i,2])){
-              Selectiondatframe[i,2]<-originalstatus[i,2]
-            }
           }
+          if(is.na(Selectiondatframe[i,2])){
+            Selectiondatframe[i,2]<-originalstatus[i,2]
+          }
+         }
+         if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
 
           Todownload<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
           Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
@@ -1972,36 +1971,19 @@ server <- function(input, output, session) {
           write(Todownloadasfasta, file )
 
         }else{  ### if input was 5p / 3p
-
-          ## first, get the pre-select  rows
-          originalstatus<<- data.frame(v1 = res_globalcopie$Name ,
-                                       v2 = res_globalcopie$Score )
-          originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
-
-          #T2nd we get the info o fthe items that user modified
-          Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                          v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
-          Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
-
-          # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
-          for(i in 1:nrow(Selectiondatframe)){
-            if(is.na(Selectiondatframe[i,1])){
-              Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
-
-            }
-            if(is.na(Selectiondatframe[i,2])){
-              Selectiondatframe[i,2]<-originalstatus[i,2]
-            }
-          }
-
-
+          print("maturesvector")
+          print(maturesvector)
           ## maturesvector$matureis
           ### check if mature is 5p or 3p and return mature!
           Todownload_0<<-cbind(mirnadf_integrated,Selectiondatframe, matureis=maturesvector$matureis )
-          Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,13 )]
-
+          print("Todownload_0")
+          print(Todownload_0)
+          Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,14 )]
+          print("Todownload_1")
+          print(Todownload_1)
           Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1[,1],"\n",Todownload_1[,2]),  paste0(">",Todownload_1[,1],"\n",Todownload_1[,3]))
-
+          print("Todownloadasfasta2")
+          print(Todownloadasfasta2)
           #Todownloadasfasta<-paste0(">",Todownload[,1],"\n",Todownload[,3])
           write(Todownloadasfasta2, file )
 
@@ -2025,23 +2007,28 @@ server <- function(input, output, session) {
 
     # Download ALL  ----
     output$downloadALL <- downloadHandler(
-      filename = "All_data.txt",
+      filename = "MirCure_All_data.txt",
       content = function(file3) {
         write.csv(toreturnall, file3 )
       }#content end
     )##end download ALL handler
     ## Download PDF report
-    if (specie == "Animal") {
-      trueMiRNA <- toreturnall[toreturnall$Score > scorethreshold | (toreturnall$Score_expression_animal > 2 & toreturnall$overhangs_score_animal > 1.25),]
-    } else {
-      trueMiRNA <- toreturnall[toreturnall$Score > scorethreshold | (toreturnall$Score_expression_plant > 2 & toreturnall$overhangs_score_plant > 1.25),]
-    }
+    # if (specie == "Animal") {
+    #   trueMiRNA <- toreturnall[toreturnall$Score > scorethreshold | (toreturnall$Score_expression_animal > 2 & toreturnall$overhangs_score_animal > 1.25),]
+    # } else {
+    #   trueMiRNA <- toreturnall[toreturnall$Score > scorethreshold | (toreturnall$Score_expression_plant > 2 & toreturnall$overhangs_score_plant > 1.25),]
+    # }
+    #
+
 
     observeEvent (input$report, {
+      print("creating report")
       withProgress(message = 'Creating report...', value = 0, {
-        n <- length(as.character(trueMiRNA$ID))
-        for (i in as.character(trueMiRNA$ID)) {
-          render("./report.Rmd", output_file = paste0 ("./report/report_", i, ".pdf"),
+        n <- length(as.character(res_globalcopie$ID))
+
+        for (i in as.character(res_globalcopie$ID)) {
+          print(i)
+          render("./report.Rmd", output_file = paste0 ("/home/ysland/Documents/MirCureApp/inst/shinyAPPs/MirCure/report/report_", i, ".pdf"),
                  params = list(new_title = paste ("report of ", i)))
           incProgress(1/n, detail = paste("report for", i))
 
