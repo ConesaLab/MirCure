@@ -1,0 +1,51 @@
+---
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+### Sequence Name:
+```{r,echo = FALSE,comment=NA }
+writeLines( as.character(ToReport[i,"ID"]))
+```
+
+### Mature/5p sequence:
+```{r,echo = FALSE,comment=NA }
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"ID"],]$`5p arm`))
+```
+
+### Star/3p sequence:
+```{r,echo = FALSE,comment=NA }
+writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"ID"],]$`3p arm`))
+```
+
+### Genomic coordinates:
+```{r,echo = FALSE,comment=NA }
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$Loci))
+```
+
+### Which arm is mature arm:
+```{r,echo = FALSE,comment=NA }
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$whoismature))
+```
+### Final score:
+```{r,echo = FALSE,comment=NA }
+writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"ID"],]$Score))
+```
+### Structure plot:
+```{r,echo = FALSE,comment=NA }
+library("jpeg")
+im <- readJPEG(paste0('./www/images/', ToReport[i,"ID"], "_fold.jpg"))
+plot (0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
+rasterImage (im, 0, 0, 1, 1)
+```
+
+### Expression plot:
+```{r,echo = FALSE,comment=NA }
+library("png")
+png <- readPNG(paste0('./www/plots/', ToReport[i,"ID"], ".png"))
+plot.new()
+rasterImage(png, 0, 0, 1, 1)
+```
