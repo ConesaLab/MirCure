@@ -33,3 +33,10 @@ runMirCure()
 - MirCure Inputs
 	1. Genome (fasta).
 	2. microRNA annotations to evaluate, in 3 gff files. One with the precursor cordinates, and two with the 2 miRNA arms (mature and star, or 3' and 5'). 
+	3. Small RNA-seq data mapped to the genome (bam)
+	
+	
+## Auxiliary scripts
+ 
+ - MiRbase_2_MirCure.R
+ - mirDeep2_2_MirCure
