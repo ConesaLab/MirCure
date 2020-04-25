@@ -12,36 +12,36 @@ writeLines( as.character(ToReport[i,"Name"]))
 
 ```
 
-### User provided Name:
+# User provided Name:
 ```{r,echo = FALSE,comment=NA }
 writeLines( as.character(ToReport[i,"UserName"]))
 ```
 
 
-### Mature/5p sequence:
+# Mature/5p sequence:
 ```{r,echo = FALSE,comment=NA }
 writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`5p arm`))
 writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`mature`))
 
 ```
 
-### Star/3p sequence:
+# Star/3p sequence:
 ```{r,echo = FALSE,comment=NA }
 writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`3p arm`))
 writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`star`))
 
 ```
 
-### Genomic coordinates:
+# Genomic coordinates:
 ```{r,echo = FALSE,comment=NA }
 writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Loci))
 ```
 
-### Which arm is mature arm:
+# Which arm is mature arm:
 ```{r,echo = FALSE,comment=NA }
 writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$whoismature))
 ```
-### Final score:
+# Final score:
 ```{r,echo = FALSE,comment=NA }
 writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Score))
 ```
