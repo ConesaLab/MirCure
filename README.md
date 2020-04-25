@@ -5,18 +5,18 @@
 
 ## Installation
 
+ - MirCure requires 2 external dependencies.
+   - [ViennaRNA package](https://www.tbi.univie.ac.at/RNA/#download)
+   - And [LATEX](https://www.latex-project.org/get/) for generating df reports (optional). 
 
-- Install MirCure as R package
+
+
+- Install MirCure as R package. 
 
 ```
 library(devtools)
 install_github("guillemylla/MirCureApp")
 ```
-
-- Dependencies
- - MirCure requires 2 external dependncies.
-   - [ViennaRNA package](https://www.tbi.univie.ac.at/RNA/#download)
-   - And [LATEX](https://www.latex-project.org/get/) for generating df reports. 
 
 
 
