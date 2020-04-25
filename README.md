@@ -1,7 +1,8 @@
-# MirCure; Quality control and curation of microRNAs
+# MirCure: A tool for quality control, filter, and curation of microRNAs of animals and plants 
 
 - Guillem Ylla
 - Tianyuan Liu
+
 
 ## Installation
 
