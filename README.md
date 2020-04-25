@@ -6,7 +6,7 @@
 ## Installation
 
  - MirCure requires 2 external dependencies.
-   - [ViennaRNA package](https://www.tbi.univie.ac.at/RNA/#download)
+   - [ViennaRNA package](https://www.tbi.univie.ac.at/RNA/#download).
    - And [LATEX](https://www.latex-project.org/get/) for generating df reports (optional). 
 
 
@@ -29,3 +29,7 @@ install_github("guillemylla/MirCureApp")
 library("MirCure")
 runMirCure()
 ```
+
+- MirCure Inputs
+	1. Genome (fasta).
+	2. microRNA annotations to evaluate, in 3 gff files. One with the precursor cordinates, and two with the 2 miRNA arms (mature and star, or 3' and 5'). 
