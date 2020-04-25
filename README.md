@@ -1,6 +1,6 @@
 # MirCure; Quality control and curation of microRNAs
 
-- Guillem Ylla (guillem_ylla [at] fas [dot] harvard [dot] edu )
+- Guillem Ylla
 - Tianyuan Liu
 
 ## Installation
