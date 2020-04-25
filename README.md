@@ -2,7 +2,7 @@
 
 - Guillem Ylla
 - Tianyuan Liu
-
+- Ana Conesa
 
 ## Installation
 
