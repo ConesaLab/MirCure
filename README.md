@@ -16,7 +16,7 @@
 
 ```
 library(devtools)
-install_github("guillemylla/MirCureApp")
+install_github("ConesaLab/MirCure")
 ```
 
 
