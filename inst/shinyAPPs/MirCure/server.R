@@ -1233,9 +1233,6 @@ server <- function(input, output, session) {
         ##################I should use it##############################
 
 
-        incProgress(1/q, detail = paste("Prec", i, "of", q))
-
-
       }# close loop for each prec
       finalMaturePosition <<- finalMaturePosition
       finalStarPosition <<- finalStarPosition
@@ -1295,6 +1292,8 @@ server <- function(input, output, session) {
       ### Make it fast for trials
 
       matureCounts <- c()
+      counts5p <- c()
+      counts3p <- c()
       starCounts <- c()
       loopCounts <- c()
       loopReason <- rep(0, nrow(mirnadf))
@@ -1353,6 +1352,14 @@ server <- function(input, output, session) {
         ##############check the expression###################
         starReads <- mean(selectedRange_coverage[star_i:star_e])
         matureReads <- mean(selectedRange_coverage[matureseq_i:matureseq_e])
+        
+        if (star_i < matureseq_i) {
+          read5p <- starReads
+          read3p <- matureReads
+        } else {
+          read5p <- matureReads
+          read3p <- starReads
+        }
 
         if (star_i >= matureseq_e) {
           loopReads <- mean(selectedRange_coverage[(matureseq_e+1 + 1):(star_i-3)])
@@ -1390,11 +1397,16 @@ server <- function(input, output, session) {
           checkStarReadsLeft <- mean(selectedRange_coverage[star_i:(star_i+1)])
 
         }
+        
+        
 
         ## make sure mature reads is the largest!!!
         matureCounts[i] <- round(matureReads)
         starCounts[i] <- round(starReads)
         loopCounts[i] <- round(loopReads,2)
+        
+        counts5p[i] <- round(read5p) 
+        counts3p[i] <- round(read3p)
         ######check the mountain-like structure#########
 
         #########Give the score For expression############################
@@ -1503,8 +1515,11 @@ server <- function(input, output, session) {
       loopCounts <<- loopCounts
       starCounts <<- starCounts
       matureCounts <<- matureCounts
+      counts5p <<- counts5p
+      counts3p <<- counts3p
+
       ### Find whis is mature/star
-      counts_Table<<-data.frame(loopCounts, matureCounts,starCounts)
+      counts_Table<<-data.frame(loopCounts, counts5p,counts3p)
       colnames(counts_Table)<- c("Loop","Mature","Star")
 
       #################### if input data was 5p / 3p, check whch is the mature/star###
@@ -2057,14 +2072,14 @@ server <- function(input, output, session) {
 
       print("creating report")
       withProgress(message = 'Creating report...', value = 0, {
-        n <- length(as.character(ToReport$ID))
+        n <- length(as.character(ToReport$Name))
         print("ToReport$ID")
         print(ToReport$ID)
         for (i in 1:nrow(ToReport)) {
           print(ToReport[i,])
-          render("./Makereport.Rmd", output_file = paste0 ("reports/report_", ToReport[i,"ID"], ".pdf"),
+          render("./Makereport.Rmd", output_file = paste0 ("reports/report_", as.character(ToReport[i,"Name"]), ".pdf"),
                  params = list(new_title = paste ("report of ", ToReport[i,])))
-          incProgress(1/n, detail = paste("report for", ToReport[i,"Name"]))
+          incProgress(1/n, detail = paste("report for", as.character(ToReport[i,"Name"])))
 
         }
       })
