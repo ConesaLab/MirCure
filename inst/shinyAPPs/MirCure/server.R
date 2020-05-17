@@ -354,7 +354,7 @@ server <- function(input, output, session) {
 
       #alignment <<- readGAlignments(".bam")
 
-       alignment <<- readGAlignments(values$bamfilepath)
+      alignment <<- readGAlignments(values$bamfilepath)
 
       incProgress(1/n, detail = "Loading bam")
 
@@ -509,7 +509,7 @@ server <- function(input, output, session) {
     values$successStepAdjust<-TRUE
   })# clos button expression PLOTS
 
-                                                                    #
+  #
   #################################
   ### Check secondary structure ###
   #################################
@@ -1352,7 +1352,7 @@ server <- function(input, output, session) {
         ##############check the expression###################
         starReads <- mean(selectedRange_coverage[star_i:star_e])
         matureReads <- mean(selectedRange_coverage[matureseq_i:matureseq_e])
-        
+
         if (star_i < matureseq_i) {
           read5p <- starReads
           read3p <- matureReads
@@ -1397,15 +1397,15 @@ server <- function(input, output, session) {
           checkStarReadsLeft <- mean(selectedRange_coverage[star_i:(star_i+1)])
 
         }
-        
-        
+
+
 
         ## make sure mature reads is the largest!!!
         matureCounts[i] <- round(matureReads)
         starCounts[i] <- round(starReads)
         loopCounts[i] <- round(loopReads,2)
-        
-        counts5p[i] <- round(read5p) 
+
+        counts5p[i] <- round(read5p)
         counts3p[i] <- round(read3p)
         ######check the mountain-like structure#########
 
@@ -1418,8 +1418,8 @@ server <- function(input, output, session) {
             scoreExpression <- c(2.5)
           } else if (starReads > ExpLevel1 & matureReads > ExpLevel1) {
             scoreExpression <- c (2)
-          # } else if (starReads > ExpLevel1 & matureReads > ExpLevel2) {
-          #   scoreExpression <- c (2)
+            # } else if (starReads > ExpLevel1 & matureReads > ExpLevel2) {
+            #   scoreExpression <- c (2)
           } else {
             scoreExpression <- c(0)
           }
@@ -1452,11 +1452,11 @@ server <- function(input, output, session) {
 
           ## Check mountain-like structure
 
-            if ((checkMatureReadsLeft / matureReads < 0.9) | (checkStarReadsLeft / starReads < 0.9)) {
-              homology[i] = 1
-              scoreExpression = scoreExpression - 0.5
-              print("Penalty mountain-like expression 0.5")
-            }
+          if ((checkMatureReadsLeft / matureReads < 0.9) | (checkStarReadsLeft / starReads < 0.9)) {
+            homology[i] = 1
+            scoreExpression = scoreExpression - 0.5
+            print("Penalty mountain-like expression 0.5")
+          }
 
           ###check franking expression
           if (flankReadsLeft > flankReadsright) {
@@ -1657,11 +1657,11 @@ server <- function(input, output, session) {
             if(length(toalignwhole)>5){## if there are between 6 and 20 identicals  (+ >20 similar)
               score2_animal<<-c(score2_animal,Score_conservation_6_20id20_Animal)
               score2_plant<<-c(score2_plant,Score_conservation_6_20id20_Plant)
-              conservationtype<<-c(conservationtype,"strong 6")
+              conservationtype<<-c(conservationtype,"strong")
             }else{
               score2_animal<<-c(score2_animal,Score_conservation_2_5id_Animal)###### if there are between 2-5 identicals (+ >20 similar)
               score2_plant<<-c(score2_plant,Score_conservation_2_5id_Plant)
-              conservationtype<<-c(conservationtype,"strong 4")
+              conservationtype<<-c(conservationtype,"strong")
 
             }
           }
@@ -1674,12 +1674,12 @@ server <- function(input, output, session) {
             if(length(toalignwhole)>5){## if there are between 6 and 20 identicals  (+ <20 similar)
               score2_animal<<-c(score2_animal, Score_conservation_6_20id_Animal)
               score2_plant<<-c(score2_plant, Score_conservation_6_20id_Plant)
-              conservationtype<<-c(conservationtype,"strong 5.8")
+              conservationtype<<-c(conservationtype,"strong")
 
             }else{
               score2_animal<<-c(score2_animal,Score_conservation_2_5id_Animal)###### if there are between 2-4 identicals (+ <20 similar)
               score2_plant<<-c(score2_plant,Score_conservation_2_5id_Plant)
-              conservationtype<<-c(conservationtype,"medium 4.8")
+              conservationtype<<-c(conservationtype,"medium")
             }
 
           }
@@ -1687,7 +1687,7 @@ server <- function(input, output, session) {
             toalign<-c(toalign,toalignwhole)
             score2_animal<<-c(score2_animal,Score_conservation_20id_Animal)######
             score2_plant<<-c(score2_plant,Score_conservation_20id_Plant)######
-            conservationtype<<-c(conservationtype,"very strong 6.5")
+            conservationtype<<-c(conservationtype,"very strong")
           }
 
         }else if(length(toalignseed)>1){#### if no identicals but some with same seed
@@ -1695,7 +1695,7 @@ server <- function(input, output, session) {
             toalign<-c(toalign,toalignseed)
             score2_animal<<-c(score2_animal,Score_conservation_0id_Animal)######
             score2_plant<<-c(score2_plant, Score_conservation_0id_Plant)######
-            conservationtype<<-c(conservationtype,"low 2")
+            conservationtype<<-c(conservationtype,"low")
 
 
           }
@@ -1703,7 +1703,7 @@ server <- function(input, output, session) {
             toalign<- c(toalign,toalignseed)###
             score2_animal<<-c(score2_animal,Score_conservation_0id20_Animal)######
             score2_plant<<-c(score2_plant,Score_conservation_0id20_Plant)######
-            conservationtype<<-c(conservationtype,"low 0.8")
+            conservationtype<<-c(conservationtype,"low")
 
 
           }
@@ -1717,7 +1717,7 @@ server <- function(input, output, session) {
         }else{ toreturn<-c(toreturn,"No")
         score2_animal<<-c(score2_animal,0)
         score2_plant<<-c(score2_plant,-2.5)
-        conservationtype<<-c(conservationtype,"none -2.5")
+        conservationtype<<-c(conservationtype,"none")
 
 
         }
@@ -1987,29 +1987,29 @@ server <- function(input, output, session) {
         # Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
         # write.csv(Todownload, file, row.names = FALSE)
 
-         if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
+        if (input$matureorarm == "maturestar"){ ## if input data has mature/star info
 
-            TodownloadMaturestar<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
-            TodownloadMaturestar<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],TodownloadMaturestar)
-            Todownloadasfasta<-paste0(">",Selectiondatframe$v1,"\n",TodownloadMaturestar[,3])
-           write(Todownloadasfasta, file )
+          TodownloadMaturestar<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
+          TodownloadMaturestar<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],TodownloadMaturestar)
+          Todownloadasfasta<-paste0(">",Selectiondatframe$v1,"\n",TodownloadMaturestar[,3])
+          write(Todownloadasfasta, file )
 
         }else{  ### if input was 5p / 3p
-            print("maturesvector")
-            print(maturesvector)
-            ## maturesvector$matureis
-            ### check if mature is 5p or 3p and return mature!
-            Todownload_0<<-cbind(mirnadf_integrated,Selectiondatframe, matureis=maturesvector$matureis )
-            print("Todownload_0")
-            print(Todownload_0)
-            Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,12,14 )]
-            print("Todownload_1")
-            print(Todownload_1)
-            Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1[,1],"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
-            print("Todownloadasfasta2")
-            print(Todownloadasfasta2)
-            #Todownloadasfasta<-paste0(">",Todownload[,1],"\n",Todownload[,3])
-            write(Todownloadasfasta2, file )
+          print("maturesvector")
+          print(maturesvector)
+          ## maturesvector$matureis
+          ### check if mature is 5p or 3p and return mature!
+          Todownload_0<<-cbind(mirnadf_integrated,Selectiondatframe, matureis=maturesvector$matureis )
+          print("Todownload_0")
+          print(Todownload_0)
+          Todownload_1<<-Todownload_0[Todownload_0$v2==TRUE,c(1:5,12,14 )]
+          print("Todownload_1")
+          print(Todownload_1)
+          Todownloadasfasta2<<- ifelse(Todownload_1$matureis=="5p", paste0(">",Todownload_1[,1],"\n",Todownload_1[,2]),  paste0(">",Todownload_1$v1,"\n",Todownload_1[,3]))
+          print("Todownloadasfasta2")
+          print(Todownloadasfasta2)
+          #Todownloadasfasta<-paste0(">",Todownload[,1],"\n",Todownload[,3])
+          write(Todownloadasfasta2, file )
 
         }
       }#content end
@@ -2047,28 +2047,28 @@ server <- function(input, output, session) {
 
     observeEvent (input$report, {
 
-              ## first, get the pre-select  rows
-              originalstatus<- data.frame(v1 = res_globalcopie$Name ,
-                                          v2 = res_globalcopie$Score )
-              originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
-              originalstatus<<-originalstatus
-              Selectiondatframe<<-NULL
-              #T2nd we get the info o fthe items that user modified
-              Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
-                                              v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
-              Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
+      ## first, get the pre-select  rows
+      originalstatus<- data.frame(v1 = res_globalcopie$Name ,
+                                  v2 = res_globalcopie$Score )
+      originalstatus$v2<-ifelse(originalstatus$v2>=scorethreshold, TRUE, FALSE )
+      originalstatus<<-originalstatus
+      Selectiondatframe<<-NULL
+      #T2nd we get the info o fthe items that user modified
+      Selectiondatframe<<- data.frame(v1 = shinyValue('v1_', nrow(mirnadf_integrated)),
+                                      v2 = shinyValue('v2_', nrow(mirnadf_integrated)))
+      Selectiondatframe$v1<-as.character(Selectiondatframe$v1)
 
-              # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
-              for(i in 1:nrow(Selectiondatframe)){
-                if(is.na(Selectiondatframe[i,1])){
-                  Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
-                }
-                if(is.na(Selectiondatframe[i,2])){
-                  Selectiondatframe[i,2]<-originalstatus[i,2]
-                }
-              }
+      # if not modified, has NA, and therfore we assign it the value of the orifinal pre-selection
+      for(i in 1:nrow(Selectiondatframe)){
+        if(is.na(Selectiondatframe[i,1])){
+          Selectiondatframe[i,1]<-as.character(originalstatus[i,1])
+        }
+        if(is.na(Selectiondatframe[i,2])){
+          Selectiondatframe[i,2]<-originalstatus[i,2]
+        }
+      }
 
-              ToReport<<-cbind(UserName=Selectiondatframe$v1,res_globalcopie)
+      ToReport<<-cbind(UserName=Selectiondatframe$v1,res_globalcopie)
 
       print("creating report")
       withProgress(message = 'Creating report...', value = 0, {
@@ -2145,10 +2145,3 @@ server <- function(input, output, session) {
   })# close button integration
 
 }#close server
-
-
-
-
-
-
-
