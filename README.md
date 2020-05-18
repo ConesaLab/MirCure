@@ -56,7 +56,7 @@ install_github("ConesaLab/MirCure")
 ```
 ## Example files
 
-Download the example files to run and understand it.
+Download the example files to run and understand how to use MirCure.
 https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EV9JbkyGvqxPj1-RZHFSltUBG8M4Hg0K9UMMBnsN32U7UA?e=ZGvTVg
 
 ## Run MirCure
