@@ -285,7 +285,8 @@ server <- function(input, output, session) {
     #mirnadf<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),star=as.character(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
     colnames(precsdf) = c("seqid" ,"source", "type",   "start",  "end",    "score"  ,"strand", "phase"  ,"ID" )
     mirnadf<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),star=as.character(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
-    mirnadf_toshow1<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),'length 5p/mature'=width(matseqs),star=as.character(starseqs),'length 3p/star'=width(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
+    mirnadf_toshow1<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),"length 5p arm"=width(matseqs),star=as.character(starseqs),"length 3p arm"=width(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
+    colnames(mirnadf_toshow1) <- c( "ID","5p","length 5p arm","3p","length 3p arm","Loci" ,"precursor" ,"precseqs_extended")
 
 
     if (input$matureorarm == "maturestar"){
@@ -1248,12 +1249,12 @@ server <- function(input, output, session) {
       print("Making dataframe animal")
       print(overhang_animal)
       print(overhang2_animal)
-      mirnadf_folding<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_animal[,1],"Loop Cleavage"=overhang2_animal[,1] )
+      mirnadf_folding<<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_animal[,1],"Loop Cleavage"=overhang2_animal[,1] )
       output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
       overhangs_score_animal<<- as.numeric(overhang_animal[,2])+as.numeric(overhang2_animal[,2] )
     }else{
       print("Making dataframe plant")
-      mirnadf_folding<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_plant[,1],"Loop Cleavage"=overhang2_plant[,1] )
+      mirnadf_folding<<-cbind(mirnadf,foldingFigs ,"pri-miRNA Cleavage"=overhang_plant[,1],"Loop Cleavage"=overhang2_plant[,1] )
       output$mirnaSeqswithplots <-  DT::renderDataTable({ mirnadf_folding[,c(1,2,3,7,8,9)]},  escape = FALSE )
       overhangs_score_plant<<- as.numeric(overhang_plant[,2])+as.numeric(overhang2_plant[,2] )
     }
@@ -1538,7 +1539,8 @@ server <- function(input, output, session) {
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }else{# if was 5p 3p
-        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"5P arm seq"=mirnadf$mature,"3P arm seq"=mirnadf$star, "Reads Mature"= maturesvector$matureis, "Reads loop"=counts_Table$Loop, "Reads 5P arm"=counts_Table$Mature, "Reads 3P arm "=counts_Table$Star)
+        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"5P arm seq"=mirnadf$mature,"3P arm seq"=mirnadf$star, "Mature Arm"= maturesvector$matureis, "Reads loop"=counts_Table$Loop, "Reads Mature"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
+        colnames(mirnadf_plots) <- c("ID", "5P arm seq", "3P arm seq", "Reads Mature", "Reads loop", "Reads 5P arm", "")
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }
@@ -2145,3 +2147,4 @@ server <- function(input, output, session) {
   })# close button integration
 
 }#close server
+
