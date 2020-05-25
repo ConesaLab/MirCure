@@ -1539,8 +1539,8 @@ server <- function(input, output, session) {
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }else{# if was 5p 3p
-        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"5P arm seq"=mirnadf$mature,"3P arm seq"=mirnadf$star, "Mature Arm"= maturesvector$matureis, "Reads loop"=counts_Table$Loop, "Reads Mature"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
-        colnames(mirnadf_plots) <- c("ID", "5P arm seq", "3P arm seq", "Reads Mature", "Reads loop", "Reads 5P arm", "Reads 3P arm")
+        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"5P arm seq"=mirnadf$mature,"3P arm seq"=mirnadf$star, "Mature Arm"= maturesvector$matureis, "Reads loop"=counts_Table$Loop, "Mature arm"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
+        colnames(mirnadf_plots) <- c("ID", "5P arm seq", "3P arm seq", "Mature arm", "Reads loop", "Reads 5P arm", "Reads 3P arm")
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }
