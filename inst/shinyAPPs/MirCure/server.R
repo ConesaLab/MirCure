@@ -286,7 +286,7 @@ server <- function(input, output, session) {
     colnames(precsdf) = c("seqid" ,"source", "type",   "start",  "end",    "score"  ,"strand", "phase"  ,"ID" )
     mirnadf<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),star=as.character(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
     mirnadf_toshow1<<-data.frame(ID=as.character(precsdf$ID), mature=as.character(matseqs),"length 5p arm"=width(matseqs),star=as.character(starseqs),"length 3p arm"=width(starseqs),"Loci"=paste(precsdf$seqid,":",precsdf$start,"-",precsdf$end,":",precsdf$strand, sep=''),precursor=as.character(precseqs),precseqs_extended=as.character(precseqs_extended) )
-    colnames(mirnadf_toshow1) <- c( "ID","5p","length 5p arm","3p","length 3p arm","Loci" ,"precursor" ,"precseqs_extended")
+    colnames(mirnadf_toshow1) <- c( "ID","5p","length 5p arm","3p","length 3p arm","Loci" ,"precursor" ,"Extended_Precursor_sequence")
 
 
     if (input$matureorarm == "maturestar"){
@@ -1535,12 +1535,12 @@ server <- function(input, output, session) {
       #################################################################################
       ExpressionPlot= paste("<img src=\"plots/",mirnadf$ID,".png\" width=\"1000\" height=\"600\"></img>", sep="")
       if (input$matureorarm == "maturestar"){ # if input data was mature/star
-        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"Mature seq"=mirnadf$mature,"Star seq"=mirnadf$star, "Reads loop"=counts_Table$Loop, "Reads Mature"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
+        mirnadf_plots<-data.frame("ID"=mirnadf$ID,"Mature seq"=mirnadf$mature,"Star seq"=mirnadf$star, "Reads loop"=counts_Table$Loop, "Mature arm"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }else{# if was 5p 3p
         mirnadf_plots<-data.frame("ID"=mirnadf$ID,"5P arm seq"=mirnadf$mature,"3P arm seq"=mirnadf$star, "Mature Arm"= maturesvector$matureis, "Reads loop"=counts_Table$Loop, "Reads Mature"=counts_Table$Mature, "Reads Star"=counts_Table$Star)
-        colnames(mirnadf_plots) <- c("ID", "5P arm seq", "3P arm seq", "Reads Mature", "Reads loop", "Reads 5P arm", "")
+        colnames(mirnadf_plots) <- c("ID", "5P arm seq", "3P arm seq", "Reads Mature", "Reads loop", "Reads 5P arm", "Reads 3P arm")
         output$PLOTS <-  DT::renderDataTable({ mirnadf_plots},  escape = FALSE, selection = 'single' )
         ExpressionPlot<<-ExpressionPlot
       }
@@ -2147,4 +2147,3 @@ server <- function(input, output, session) {
   })# close button integration
 
 }#close server
-
