@@ -222,15 +222,15 @@ ui <- navbarPage("MirCure",theme = shinytheme("flatly"),
                             column(width = 12, tableOutput("wsf"),
                                    title = "Aligntab",
                                    column(width =3,
-                                          h4("Show Alignments"),
+                                          h4("Alignments"),
                                           verbatimTextOutput("Intergartiontable4")
                                    ),
                                    column(width =3,
-                                          h4("Show Folding"),
+                                          h4("Precursor Folding"),
                                           htmlOutput("Intergartiontable2")
                                    ),
                                    column(width =6,
-                                          h4("Show Expression lot"),
+                                          h4("Expression Plot"),
                                           uiOutput("Intergartiontable3")
                                    )
                             )
@@ -257,3 +257,4 @@ ui <- navbarPage("MirCure",theme = shinytheme("flatly"),
 
                  )
 )
+
