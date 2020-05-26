@@ -6,7 +6,7 @@
 
 ## tutorial Video
 
-- We make a tutoral video to help you to use MirCure:https://youtu.be/o3mSYBRZdgo
+- We make a tutoral video to help you to use MirCure:https://youtu.be/kN7tbeag1rk
 
 ## Introduction
 - The miRNAs are short (~22nts) non-coding RNAs that bind to target messenger RNA (mRNAs) to block their translation and trigger degradation. Due to their precise and powerful mechanism of action, miRNAs are involved in the regulation of a myriad of biological processes and are involved in numerous diseases. 
@@ -73,7 +73,7 @@ runMirCure()
 	2. microRNA annotations to evaluate, in 3 gff files. One with the precursor cordinates, and two with the 2 miRNA arms (mature and star, or 3' and 5'). 
 	3. Small RNA-seq data mapped to the genome (bam)
 
-
+- Some Scripts to help you create a bam file in **How to create bam files.RFT**
 ## Auxiliary scripts
  
  - MiRbase_2_MirCure.R
