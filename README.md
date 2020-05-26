@@ -73,7 +73,7 @@ runMirCure()
 	2. microRNA annotations to evaluate, in 3 gff files. One with the precursor cordinates, and two with the 2 miRNA arms (mature and star, or 3' and 5'). 
 	3. Small RNA-seq data mapped to the genome (bam)
 
-- Some Scripts to help you create a bam file in **How to create bam files.RFT**
+- Some Scripts to help you create a bam file in **How to create bam files.RTF**
 ## Auxiliary scripts
  
  - MiRbase_2_MirCure.R
