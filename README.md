@@ -6,7 +6,7 @@
 
 ## tutorial Video
 
-- We make a tutoral video to help you to use MirCure:https://youtu.be/kN7tbeag1rk
+- We make a tutoral video to help you to use MirCure:https://youtu.be/j5FmuxpZjnY
 
 ## Introduction
 - The miRNAs are short (~22nts) non-coding RNAs that bind to target messenger RNA (mRNAs) to block their translation and trigger degradation. Due to their precise and powerful mechanism of action, miRNAs are involved in the regulation of a myriad of biological processes and are involved in numerous diseases. 
