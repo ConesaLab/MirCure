@@ -1201,11 +1201,11 @@ server <- function(input, output, session) {
         ## later I would add plants
 
 
-
+        print("HEi!!!\n\n")
         ###Lets adjust image parameters depending on length
         if(nchar(folded[1,]) > 180){
 
-          jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
           par(mar=c(0.1,0.1,0,0.1))
           RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
                   seqcols=c(color_arm1,color_arm2),labTF=FALSE,
@@ -1213,7 +1213,7 @@ server <- function(input, output, session) {
                   dp=1, tsize=0.5)
           dev.off()
         }else if( nchar(folded[1,]) > 100){
-          jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
           par(mar=c(0.1,0.1,0,0.1))
           RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
                   seqcols=c(color_arm1,color_arm2),labTF=FALSE,
@@ -1221,7 +1221,7 @@ server <- function(input, output, session) {
                   dp=1, tsize=0.8)
           dev.off()
         }else{
-          jpeg(filename = paste( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
           par(mar=c(0.1,0.1,0,0.1))
           RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
                   seqcols=c(color_arm1,color_arm2),labTF=FALSE,
@@ -1328,7 +1328,7 @@ server <- function(input, output, session) {
         toplot<-rbind(libs=t(selectedRange_coverage), expression=greybars)
 
 
-        png(filename = paste("www/plots/",mirname, ".png",sep=""),   width = 1200, height = 480)
+        png(filename = paste0("www/plots/",mirname, ".png",sep=""),   width = 1200, height = 480)
         par(mar=c(2,4.5,2,0))
         plot<-barplot(toplot, axes=TRUE, ylab="Number of Reads", main=mirname, col=c("blue4", "grey"), border=c("blue4","grey"),beside=T)
         # mtext(at = plot, text = seq,col="black", side = 1,  line = 0, cex=1)
@@ -1849,7 +1849,7 @@ server <- function(input, output, session) {
     ##### SET score threshold!
     #####
     ## pre-check some rows absed on their score
-    res$NewName<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_1\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
+    res$NewName<- paste0('<div class=\"form-group shiny-input-container\">\n  <input id=\"v1_',1:length(mirnadf_integrated$ID),'\" type=\"text\" class=\"form-control\" value=\"', mirnadf_integrated$ID,'">\n</div>')
     res[res$Score>=scorethreshold,]$Filter<- gsub('\"checkbox\"/>\n', '\"checkbox\" checked=\"checked\"/>\n',  res[res$Score>=scorethreshold,]$Filter )
     ####
     res_globalcopie<<-res
@@ -1885,8 +1885,17 @@ server <- function(input, output, session) {
 
     # print the values of inputs
     shinyValue = function(id, len) {
+      print(input)
+      print('input[["v1_1"]]')
+      print(input[["v1_1"]])
+      print('input[["v1_2"]]')
+      print(input[["v1_2"]])
+      print('input[["v1_3"]]')
+      print(input[["v1_3"]])
       unlist(lapply(seq_len(len), function(i) {
         value = input[[paste0(id, i)]]
+        print(value)
+        print(paste("id ", id))
         if (is.null(value)) NA else value
       })) }
 
@@ -2045,7 +2054,6 @@ server <- function(input, output, session) {
     #   trueMiRNA <- toreturnall[toreturnall$Score > scorethreshold | (toreturnall$Score_expression_plant > 2 & toreturnall$overhangs_score_plant > 1.25),]
     # }
     #
-
 
     observeEvent (input$report, {
 
