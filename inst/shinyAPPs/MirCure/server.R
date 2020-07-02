@@ -1951,7 +1951,7 @@ server <- function(input, output, session) {
         }
 
         Todownload<<-mirnadf_integrated[Selectiondatframe$v2==TRUE,1:5]
-        Todownload<<-cbind(Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
+        Todownload<<-cbind(Names=Selectiondatframe[Selectiondatframe$v2==TRUE,1],Todownload)
         write.csv(Todownload, file, row.names = FALSE)
       }
     )
