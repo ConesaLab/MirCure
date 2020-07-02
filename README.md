@@ -27,6 +27,11 @@ We provide MirCure as a Shinny App, which can easily be executed as an R functio
 - To assist researchers in the selection of bona fide miRNAs out of a list of putative miRNA annotations, we developed MirCure. MirCure is a Shiny tool for quality control and filtering of both existing miRNA annotations and de novo miRNA predictions. MirCure obtains a quality score based on the automatic evaluation of different sources of miRNA evidence that can be used to accept, reject, or revisit miR-NA calls. Moreover, MirCure generates a visual report for each miRNA candidate in which all the relevant miRNA biogenesis criteria are represented, thereby greatly facilitating the curation process. We validate MirCure on a set of extensively curated miRNA annotations both for animals and plants. To our knowledge, MirCure is the first tool to perform automatic quality control of miRNA annotations based on small RNA-seq and strict biogenesis criteria.
 
 ## Basic Strategy
+
+- MirCure uses small RNA-seq coverage, structural information, and sequence conservation to calculate a quality score that can be use to select robustly supported miRNA annotations.
+
+- Example of some of the features that MirCure analyzes:
+
 <p align="center">
 <img src="https://github.com/ConesaLab/MirCure/blob/master/Figures/Figure3_final.png" width="450">
 	</p>
@@ -34,20 +39,14 @@ We provide MirCure as a Shinny App, which can easily be executed as an R functio
 Figure 1
 	</p>
 
-- A real micro-RNA should have a good structure/expression evidence shown in Figure 1:
-	1. The length of both arms should between 20-26 nts and have at least 16 complementary nts.
-	2. The two-arm (mature/star) arm should have two nts overhang.
-	3. Enough read evidence to support mature/star arm and fewer reads in the loop/flanking region.
+- A real microRNA should have:
+	1. Hairpin-like  secondary structure of the precursor sequence.
+	2. Two miRNA between 20-26 nts long with at least 16 complementary nts.
+	3. The two-arm (mature/star) arm should have two nts overhang and both 3' extremes.
+	4. RNA-seq evidence supporting the mature/star arms.
+	5. ow proportion of reads within the loop region and precursor flanking regions.
+  6. In plants,  we expect higher seqeunce  conservation.
 
-- A real micro-RNA should highly conserved in plant
-- Based on our strategy, we give different scores for different miRNA candidates. Only the candidate passed the threshold could be considered as real miRNA.
-
-
-## Strategy
-
-
-- MirCure requires miRNA annotations data provided as three gff3 files, describing precursor annotations and annotations for the two miRNA arms. The gff3 files corresponding to the miRNA arms may use 5’/3’ or mature/star as an-notation styles. When arms are annotated as 3’/5’, MirCure con-siders as mature the arm with the highest number of small RNA-seq reads. Additionally, the PreapareMirbase.R script is used to predict miRNA arm annotations from mirRBase data, where this information is frequently missing. Finally, we include mirDeep_2_mirCure.R to format the output of the mirDeep2 to the MirCure format. MirCure also requires as input files the genome sequence (fasta) of the organism and a bam file with small RNA-seq data mapped to this genome sequence.
-- The MirCure software runs the pipeline described in Figure 2, that implements state-of-the-art guidelines for robust miRNAs annotation in animals and plants, by combining expression evidence (i.e. small RNA-seq data) and biogenesis information. This pipeline first adjusts miRNA annotations based on small RNA-seq data and then evaluates three different aspects of miRNA quality: secondary structure, gene expression, and conservation. For each of these aspects, a score is calculated, and relevant graphical outputs are generated. The final quality scores assigned to each miRNA candidate is a function of different sub-scores calculated in the three MirCure steps . The weight of each subscore on the final score calculation is different for animals and plants due to the differences in their biogenesis.
 
 <p align="center">
 <img src="https://github.com/ConesaLab/MirCure/blob/master/Figures/Figure1_MirCure_Pipeline_Final.jpg" width="750">
@@ -70,12 +69,10 @@ There are two main options to run MirCure:
 
 ```
 docker run --rm -p 3838:3838 \
-docker run --rm -p 3838:3838 \
 -v LOCAL_Genome_DIR:/srv/shiny-server/data/genomes \
 -v LOCAL_BAMFILE_DIR:/srv/shiny-server/data/bamfiles \
 -v LOCAL_DIR_TO_SAVE_MIRCUREREPORTS:/srv/shiny-server/reports\
     conesalab/mircure
-
 ```
 
 - Where:
@@ -83,7 +80,10 @@ docker run --rm -p 3838:3838 \
 	- **LOCAL_BAMFILE_DIR** is the path to directory where the **bam file** is located.
 	- **LOCAL_DIR_TO_SAVE_MIRCUREREPORTS** path to directory where **MirCure** pdf reports will be saved.
 
+- Open the URL that the terminal will return (typically http://[::]:3838 ) in a **web browser**.
 
+
+![](https://github.com/ConesaLab/MirCure/tree/master/Figures/mircure_url.png)
 ### MirCure as R package
 
  - MirCure requires 2 external dependencies.
