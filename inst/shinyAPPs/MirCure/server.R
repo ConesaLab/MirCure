@@ -1281,7 +1281,7 @@ server <- function(input, output, session) {
     )
     shiny::validate(
       need( values$successStep2==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
-      errorClass =  showNotification("Missing succesful Step 2: Folding seq", type= "error")
+      errorClass =  showNotification("Missing succesful Step 3: Folding seq", type= "error")
     )
 
     Score_expression_animal<-rep(0, nrow(mirnadf)) # set all scores to zero
@@ -1584,18 +1584,22 @@ server <- function(input, output, session) {
 
 
     ### Allows to run step 4 without step 2 ,3 &4...
-    shiny::validate(
-      need( values$successStep1==TRUE, message = ('Missing succesful Step 1')),
-      errorClass =  showNotification("Missing succesful Step 1", type= "error")
-    )
-
-    if (input$matureorarm == "arm5p3p"){
       shiny::validate(
-        need( values$successStep3==TRUE, message = ('Missing succesful Step 3')),
-        errorClass =  showNotification("Missing succesful Step 3", type= "error")
+        need( values$successStep1==TRUE, message = ('Missing succesful Step 1')),
+        errorClass =  showNotification("Missing succesful Step 1", type= "error")
       )
-    }else{"can proceed"}
-
+      shiny::validate(
+        need( values$successStepAdjust==TRUE, message = ('Missing succesful Step 2: Adjust structure ')),
+        errorClass =  showNotification("Missing succesful Step 2: Adjust structure ", type= "error")
+      )
+      shiny::validate(
+        need( values$successStep2==TRUE, message = ('Missing succesful Step 3: fold seqs ')),
+        errorClass =  showNotification("Missing succesful Step 3: Folding seq", type= "error")
+      )
+      shiny::validate(
+        need( values$successStep3==TRUE, message = ('Missing succesful Step 4')),
+        errorClass =  showNotification("Missing succesful Step 4", type= "error")
+      )
 
     withProgress(message = 'Aligning matures:', value = 0, {
       n <- dim(mirnadf)[1]
