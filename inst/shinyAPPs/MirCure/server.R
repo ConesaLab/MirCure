@@ -1884,13 +1884,6 @@ server <- function(input, output, session) {
 
     # print the values of inputs
     shinyValue = function(id, len) {
-      print(input)
-      print('input[["v1_1"]]')
-      print(input[["v1_1"]])
-      print('input[["v1_2"]]')
-      print(input[["v1_2"]])
-      print('input[["v1_3"]]')
-      print(input[["v1_3"]])
       unlist(lapply(seq_len(len), function(i) {
         value = input[[paste0(id, i)]]
         print(value)
