@@ -116,7 +116,7 @@ https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EecwMk1Sx
 	2. microRNA annotations to evaluate, in 3 gff files. One with the precursor cordinates, and two with the 2 miRNA arms (mature and star, or 3' and 5').
 	3. Small RNA-seq data mapped to the genome (bam)
 
-- Some Scripts to help you create a bam file in [**How to create bam files.RTF**](How to create bam files.rtf)
+- Some Scripts to help you create a bam file in [**How to create bam files.RTF**](https://github.com/ConesaLab/MirCure/blob/master/How%20to%20create%20bam%20files.rtf)
 
 ## Auxiliary scripts
 
