@@ -1201,7 +1201,6 @@ server <- function(input, output, session) {
         ## later I would add plants
 
 
-        print("HEi!!!\n\n")
         ###Lets adjust image parameters depending on length
         if(nchar(folded[1,]) > 180){
 
