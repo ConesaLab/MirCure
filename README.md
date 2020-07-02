@@ -80,7 +80,7 @@ docker run --rm -p 3838:3838 \
 	- **LOCAL_BAMFILE_DIR** is the path to directory where the **bam file** is located.
 	- **LOCAL_DIR_TO_SAVE_MIRCUREREPORTS** path to directory where **MirCure** pdf reports will be saved.
 
-- Open the URL that the terminal will return (typically http://[::]:3838 ) in a **web browser**.
+- Open the URL that the terminal will return (typically [http://[::]:3838](https://github.com/ConesaLab/MirCure/blob/master/Figures/mircure_url.png) ) in a **web browser**.
 
 
 ![](Figures/mircure_url.png)
