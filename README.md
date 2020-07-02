@@ -83,7 +83,7 @@ docker run --rm -p 3838:3838 \
 - Open the URL that the terminal will return (typically http://[::]:3838 ) in a **web browser**.
 
 
-![](https://github.com/ConesaLab/MirCure/tree/master/Figures/mircure_url.png)
+![](Figures/mircure_url.png)
 ### MirCure as R package
 
  - MirCure requires 2 external dependencies.
