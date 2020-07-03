@@ -1,14 +1,3 @@
-
-runExample <- function() {
-  appDir <- system.file("shinyAPPs", "basicshinnyapp",package = "MirCureApp")
-  if (appDir == "") {
-    stop("Could not find basicshinnyapp directory. Try re-installing `MirCureApp`.", call. = FALSE)
-  }
-
-  shiny::runApp(appDir, display.mode = "normal")
-}
-
-
 runMirCure <- function() {
 
   ############################

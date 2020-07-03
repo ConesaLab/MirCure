@@ -1,12 +1,11 @@
 Package: MirCure
 Type: Package
-Title: A tool for quality control and filtering of microRNAs
+Title: A tool for quality control, filter, and curation of microRNAs of animals and plants
 Version: 0.1.0
 Author: Guillem Ylla
 Maintainer: The package maintainer <guillemyllabou@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: MIT
+Description: MirCure is a computational application to assist on filtering and curating microRNA annotations obtained from databases or de novo miRNA annotation tools..
+License: GNU General Public License v3.0
 Encoding: UTF-8
 LazyData: true
 biocViews:
