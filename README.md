@@ -103,13 +103,13 @@ library("MirCure")
 runMirCure()
 ```
 
-## Example files
+## Example Files
 
-Download the example files to run and understand how to use MirCure.
+Download the example files to test MirCure.
 https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EecwMk1SxX9EluiTkOojjHQBIBSbPBe12hA9ZTMTnXf0Dg?e=Uk4Bet
 
 
-## Input Data for MirCUre
+## Input Data for MirCure
 
 - MirCure Inputs
 	1. Genome (fasta).
