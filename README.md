@@ -122,3 +122,7 @@ https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EecwMk1Sx
 
  - MiRbase_2_MirCure.R
  - mirDeep2_2_MirCure
+
+## Citation
+
+Ylla, G., Tianyuan, L., & Ana, C. (2020). MirCure: A tool for quality control, filter, and curation of microRNAs of animals and plants.
