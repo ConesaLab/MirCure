@@ -5,7 +5,7 @@
 runMirCure()
 }
 \description{
-This function launches the MirCure Shiny graphic use interface.
+This function launches the MirCure Shiny graphic user interface.
 }
 \examples{
 runMirCure()
