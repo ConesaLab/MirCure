@@ -69,10 +69,11 @@ Figure 2
 ## How to Install and Run MirCure
 
 There are two main options to run MirCure:
-- Run as Docker container (**recommended**)
--	Install and run as  *R package*.
 
-### MirCure as Docker container
+1.  Run MirCure Docker image (**recommended**)
+2.  Install and run MirCure as  *R package*.
+
+### Run  MirCure  Docker Image
 
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/conesalab/mircure)
 
@@ -97,9 +98,11 @@ docker run --rm -p 3838:3838 \
 
 
 ![](Figures/mircure_url.png)
+
 ### MirCure as R package
 
  - MirCure requires 2 external dependencies.
+
    - [ViennaRNA package](https://www.tbi.univie.ac.at/RNA/#download).
    - And [LATEX](https://www.latex-project.org/get/) for generating pdf reports (optional).
 
