@@ -1,5 +1,7 @@
 # MirCure: A tool for quality control, filter, and curation of microRNAs of animals and plants
 
+![GitHub last commit](https://img.shields.io/github/last-commit/ConesaLab/MirCure)
+
 - Guillem Ylla
 - Tianyuan Liu
 - Ana Conesa
