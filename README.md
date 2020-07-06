@@ -2,7 +2,7 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ConesaLab/MirCure)
 ![pubstatus](https://img.shields.io/badge/publication:-Accepted-orange)
-
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 - Guillem Ylla
 - Tianyuan Liu
