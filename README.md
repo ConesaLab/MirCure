@@ -64,6 +64,9 @@ There are two main options to run MirCure:
 
 ### MirCure as Docker container
 
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/conesalab/mircure)
+
+
 - You just need to install the [Docker engine](https://docs.docker.com/engine/install/).
 - Run MirCure with the following command:
 
