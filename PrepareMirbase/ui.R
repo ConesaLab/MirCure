@@ -1,7 +1,7 @@
 # Define UI for dataset viewer app ----
 library("shinythemes")
 
-ui <- navbarPage("mirPlot v0",theme = shinytheme("sandstone"),
+ui <- navbarPage("Prepare miRBase for MirCure",theme = shinytheme("sandstone"),
 
 tabPanel(title='Load Data',
       # Sidebar layout with a input and output definitions ----
@@ -24,7 +24,7 @@ tabPanel(title='Load Data',
 
 
            ),
-       
+
 # Main panel for displaying outputs ----
       mainPanel(
         h1("Hello world!"),
@@ -36,7 +36,7 @@ tabPanel(title='Load Data',
         tableOutput("fiveP"),
         h3("3'arms miRNAs"),
         tableOutput("threeP")
-        
+
 )
 )
 )
