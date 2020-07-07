@@ -130,8 +130,8 @@ https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EecwMk1Sx
 
 ## Auxiliary scripts
 
- - [PrepareMirbase](MirCure/Auxiliary_scripts/PrepareMirbase)
- - [mirDeep_2_mirCure.R](MirCure/Auxiliary_scripts/mirDeep_2_mirCure.R)
+ - [PrepareMirbase](https://github.com/ConesaLab/MirCure/tree/master/Auxiliary_scripts/PrepareMirbase)
+ - [mirDeep_2_mirCure.R](https://github.com/ConesaLab/MirCure/blob/master/Auxiliary_scripts/mirDeep_2_mirCure.R)
 
 ## Citation
 
