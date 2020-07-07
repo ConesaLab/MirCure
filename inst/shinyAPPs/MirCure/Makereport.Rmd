@@ -4,56 +4,45 @@ output:
   html_document:
     df_print: paged
 ---
-
-
-### Original Name:
+\fontfamily{cmr}
+\fontsize{10}{8}
+\fontseries{b}
+\vspace{0.1cm}
+\selectfont
 ```{r,echo = FALSE,comment=NA }
-writeLines( as.character(ToReport[i,"Name"]))
-
+library('tinytex')
+library("kableExtra")
+library("xtable")
+if (toreturnall$whoismature[i] == "3p is Mature") {
+  miRNA3p <- paste0(" ", as.character(ToReport$mature[i]))
+  miRNA5p <- paste0("* ", as.character(ToReport$star[i]))
+} else {
+    miRNA5p <- paste0(" ",as.character(ToReport$mature[i]))
+    miRNA3p <- paste0("* ", as.character(ToReport$star[i]))
+}
 ```
+`>``r as.character(ToReport[i,"UserName"])` (`r as.character(ToReport[i,"UserName"])`)
 
-# User provided Name:
+`r as.character(toreturnall$precursor[i])`
+
+`>``r as.character(ToReport[1,"UserName"])`_3p`r as.character(miRNA3p)`
+
+`>``r as.character(ToReport[1,"UserName"])`_5p`r as.character(miRNA5p)`
+
+Genomic coordinates: `r as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Loci)`
+Final score: `r as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Score)`
 ```{r,echo = FALSE,comment=NA }
-writeLines( as.character(ToReport[i,"UserName"]))
+alignmentResult <- as.data.frame(as.character(Alignmentlist[[i]]))
+colnames(alignmentResult) <-NULL
+print(alignmentResult)
 ```
-
-
-# Mature/5p sequence:
-```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`5p arm`))
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`mature`))
-
-```
-
-# Star/3p sequence:
-```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`3p arm`))
-writeLines(as.character(toprintaligns[toprintaligns$ID ==  ToReport[i,"Name"],]$`star`))
-
-```
-
-# Genomic coordinates:
-```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Loci))
-```
-
-# Which arm is mature arm:
-```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$whoismature))
-```
-# Final score:
-```{r,echo = FALSE,comment=NA }
-writeLines(as.character(toreturnall[toprintaligns$ID ==  ToReport[i,"Name"],]$Score))
-```
-### Structure plot:
 ```{r,echo = FALSE,comment=NA }
 library("jpeg")
 im <- readJPEG(paste0('./www/images/', ToReport[i,"Name"], "_fold.jpg"))
 plot (0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
-rasterImage (im, 0, 0, 1, 1)
+rasterImage (im, -0.5, 0, 1, 2)
 ```
 
-### Expression plot:
 ```{r,echo = FALSE,comment=NA }
 library("png")
 png <- readPNG(paste0('./www/plots/', ToReport[i,"Name"], ".png"))
