@@ -10,9 +10,6 @@ output:
 \vspace{0.1cm}
 \selectfont
 ```{r,echo = FALSE,comment=NA }
-library('tinytex')
-library("kableExtra")
-library("xtable")
 if (toreturnall$whoismature[i] == "3p is Mature") {
   miRNA3p <- paste0(" ", as.character(ToReport$mature[i]))
   miRNA5p <- paste0("* ", as.character(ToReport$star[i]))
