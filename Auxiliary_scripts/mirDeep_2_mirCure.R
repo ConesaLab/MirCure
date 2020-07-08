@@ -91,6 +91,3 @@ precursorGFF3 <- cbind(sequence_ID, source, type2, precursor_start,
 write.table(precursorGFF3, file = "precursorGFF3.gff3", sep = "\t",
             row.names = FALSE, quote = FALSE, col.names = FALSE)
 
-
-mirQCApp::runMirPlot()
-
