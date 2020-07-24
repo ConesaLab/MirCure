@@ -1,5 +1,5 @@
 csv <- read.csv("mirdeep_result_mmu.csv")# read the mirDeep result
-bed <- read.delim2("mouse.bed", header = FALSE)n# read the mirDeep result
+bed <- read.delim2("mouse.bed", header = FALSE)# read the mirDeep result
 
 # create some vector to save the information for the gff file
 mature_end <- c()
@@ -18,10 +18,10 @@ for (i in 1:nrow(csv)) {
   mature_long
   star_long <- nchar(as.character(csv$consensus.star.sequence[i]))
   star_long
-
+  
   mature_1 <- mature[[1]][1]
   star_1 <- star[[1]][1]
-
+  
   # find the start and the end position of the sequence in the genome;
   # Because we use GFF file, we need to plus one for the start;
   precursor_start[i] <- bed$V2[i] + 1
@@ -31,7 +31,7 @@ for (i in 1:nrow(csv)) {
   mature_start[i] <- start_mature
   end_mature <- start_mature + mature_long - 1
   mature_end[i] <- end_mature
-
+  
   start_star <- bed$V2[i] + star_1 - 1 + 1
   star_start[i] <- start_star
   end_star <- start_star + star_long - 1 
@@ -62,6 +62,8 @@ ID <- c()
 for (i in 1:nrow(csv)){
   if (csv$miRBase.miRNA[i] == "-") {
     ID[i] <- paste("Novel-miRNA_", i, sep = "")
+  } else if (!is.element(as.character(csv$miRBase.miRNA[i]), as.character(csv$miRBase.miRNA[-c(i)]))){
+    ID[i] <- paste (as.character(csv$miRBase.miRNA[i]), i, sep = ".")
   } else {
     ID[i] <- paste (as.character(csv$miRBase.miRNA[i]), sep = "")
   }
@@ -78,16 +80,15 @@ write.table(matureGFF3, file = "matureGFF3.gff3", sep = "\t",
 
 # create the star GFF3 file
 starGFF3 <- cbind(sequence_ID, source, type1, star_start,
-                 star_end, score, strand, phase, ID)
+                  star_end, score, strand, phase, ID)
 
 write.table(starGFF3, file = "starGFF3.gff3", sep = "\t",
             row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 #create the precursor GFF3 file
 precursorGFF3 <- cbind(sequence_ID, source, type2, precursor_start,
-                 precursor_end, score, strand, phase, ID)
+                       precursor_end, score, strand, phase, ID)
 
 
 write.table(precursorGFF3, file = "precursorGFF3.gff3", sep = "\t",
             row.names = FALSE, quote = FALSE, col.names = FALSE)
-
