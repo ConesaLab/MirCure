@@ -290,6 +290,7 @@ server <- function(input, output, session) {
 
 
     if (input$matureorarm == "maturestar"){
+      colnames(mirnadf_toshow1) <- c( "ID","Mature","length Mature arm","Star","length Star  arm","Loci" ,"precursor" ,"Extended_Precursor_sequence")
       output$mirnaSeqs <- DT::renderDataTable({ mirnadf_toshow1}  )
     }else{
       mirnadfrenamed<-mirnadf_toshow1
@@ -1198,38 +1199,67 @@ server <- function(input, output, session) {
         penaltyscore2 [i]<-ifelse((max(finalMaturePosition[[i]]) - min(finalMaturePosition[[i]]) + 1) < 18 |  (max(finalMaturePosition[[i]]) - min(finalMaturePosition[[i]]) + 1) > 26, penalty_length, 0 )
         penaltyscorelength_animal<<-penaltyscore2+penaltyscore1
 
-        ## later I would add plants
 
+        if( gregexpr(RNAString(DNAString(mirnadf$mature[i])),  RNAString(DNAString(mirnadf$precursor[i])))[[1]][1] < gregexpr(RNAString(DNAString(mirnadf$star[i])),  RNAString(DNAString(mirnadf$precursor[i])))[[1]][1]    ){# if 5p
+                 ###Lets adjust image parameters depending on length
+                if(nchar(folded[1,]) > 180){
 
-        ###Lets adjust image parameters depending on length
-        if(nchar(folded[1,]) > 180){
+                  jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+                  par(mar=c(0.1,0.1,0,0.1))
+                  RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                          seqcols=c(color_arm1,color_arm2),labTF=FALSE,
+                          pointSize = 1, lineWd = 1, nt=T,
+                          dp=1, tsize=0.5)
+                  dev.off()
+                }else if( nchar(folded[1,]) > 100){
+                  jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+                  par(mar=c(0.1,0.1,0,0.1))
+                  RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                          seqcols=c(color_arm1,color_arm2),labTF=FALSE,
+                          pointSize = 2, lineWd = 1, nt=T,
+                          dp=1, tsize=0.8)
+                  dev.off()
+                }else{
+                  jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+                  par(mar=c(0.1,0.1,0,0.1))
+                  RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                          seqcols=c(color_arm1,color_arm2),labTF=FALSE,
+                          pointSize = 2.3, lineWd = 1, nt=T,
+                          dp=1, tsize=1)
+                  dev.off()
+                }
+                folded_globe [[i]] <- folded
+        }else{ # if mature 3'
+          ###Lets adjust image parameters depending on length
+          if(nchar(folded[1,]) > 180){
 
-          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
-          par(mar=c(0.1,0.1,0,0.1))
-          RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-                  seqcols=c(color_arm1,color_arm2),labTF=FALSE,
-                  pointSize = 1, lineWd = 1, nt=T,
-                  dp=1, tsize=0.5)
-          dev.off()
-        }else if( nchar(folded[1,]) > 100){
-          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
-          par(mar=c(0.1,0.1,0,0.1))
-          RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-                  seqcols=c(color_arm1,color_arm2),labTF=FALSE,
-                  pointSize = 2, lineWd = 1, nt=T,
-                  dp=1, tsize=0.8)
-          dev.off()
-        }else{
-          jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
-          par(mar=c(0.1,0.1,0,0.1))
-          RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
-                  seqcols=c(color_arm1,color_arm2),labTF=FALSE,
-                  pointSize = 2.3, lineWd = 1, nt=T,
-                  dp=1, tsize=1)
-          dev.off()
+            jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+            par(mar=c(0.1,0.1,0,0.1))
+            RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                    seqcols=c(color_arm2,color_arm1),labTF=FALSE,
+                    pointSize = 1, lineWd = 1, nt=T,
+                    dp=1, tsize=0.5)
+            dev.off()
+          }else if( nchar(folded[1,]) > 100){
+            jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+            par(mar=c(0.1,0.1,0,0.1))
+            RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                    seqcols=c(color_arm2,color_arm1),labTF=FALSE,
+                    pointSize = 2, lineWd = 1, nt=T,
+                    dp=1, tsize=0.8)
+            dev.off()
+          }else{
+            jpeg(filename = paste0( "www/images/", mirnadf$ID[i],"_fold.jpg",sep=''),quality=100, width = 2000, height = 2000, units = "px",res =300 )
+            par(mar=c(0.1,0.1,0,0.1))
+            RNAPlot(coord,hl=c(as.character(RNAString(DNAString(mirnadf$mature[i]))), as.character(RNAString(DNAString(mirnadf$star[i])))),#, main=mirnadf$ID[i]
+                    seqcols=c(color_arm2,color_arm1),labTF=FALSE,
+                    pointSize = 2.3, lineWd = 1, nt=T,
+                    dp=1, tsize=1)
+            dev.off()
+          }
+          folded_globe [[i]] <- folded
+
         }
-        folded_globe [[i]] <- folded
-
         ##################I should use it##############################
 
 
