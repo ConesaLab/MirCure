@@ -21,7 +21,7 @@ We provide MirCure as a Shinny App, which can easily be executed as an R functio
 
 ## Video Tutorial
 
-- We make a tutorial video to help you to use MirCure:https://youtu.be/6rBHaRwqAwA
+- We make a tutorial video to help you to use MirCure: https://youtu.be/Rfd4Jm9dVpc
 
 ## Introduction
 
