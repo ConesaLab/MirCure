@@ -1,7 +1,12 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
 # MirCure: A tool for quality control, filter, and curation of microRNAs of animals and plants
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ConesaLab/MirCure)
-![pubstatus](https://img.shields.io/badge/publication:-Accepted-orange)
+![pubstatus](https://img.shields.io/badge/publication:-Published-green)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 - Guillem Ylla
@@ -135,4 +140,6 @@ https://uflorida-my.sharepoint.com/:u:/g/personal/tianyuan_liu_ufl_edu/EecwMk1Sx
 
 ## Citation
 
-Ylla, G., Tianyuan, L., & Ana, C. (2020). MirCure: A tool for quality control, filter, and curation of microRNAs of animals and plants.
+
+Ylla, G., Liu, T. and Conesa, A. (2020). [MirCure: a tool for quality control, filter and curation of microRNAs of animals and plants](https://academic.oup.com/bioinformatics/article/36/Supplement_2/i618/6055935), Bioinformatics. Oxford University Press. doi: 10.1093/bioinformatics/btaa889.
+
